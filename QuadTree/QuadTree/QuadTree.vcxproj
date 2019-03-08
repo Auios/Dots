@@ -72,7 +72,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <WarningLevel>Level3</WarningLevel>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
@@ -115,10 +115,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Point.cpp" />
     <ClCompile Include="QuadTree.cpp" />
+    <ClCompile Include="Rect.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="defines.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="QuadTree.h" />
     <ClInclude Include="Rect.h" />
