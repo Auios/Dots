@@ -1,0 +1,8 @@
+Neat visualization
+http://ericandrewlewis.github.io/how-a-quadtree-works/
+
+Quad Tree vs Spatial Hashing
+http://zufallsgenerator.github.io/2014/01/26/visually-comparing-algorithms/
+
+Spatial Hashing
+https://www.gamedev.net/articles/programming/general-and-gameplay-programming/spatial-hashing-r2697
