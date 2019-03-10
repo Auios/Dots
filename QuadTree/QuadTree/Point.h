@@ -1,5 +1,7 @@
 #pragma once
 
+#include "defines.h"
+
 struct Point
 {
 	int x, y;
@@ -9,8 +11,6 @@ struct Pointf
 {
 	float x, y;
 };
-
-#define EXPORT __declspec(dllexport)
 
 extern "C"
 {

@@ -1,14 +1,14 @@
 #pragma once
 
-#include <vector>
-
+#include "defines.h"
 #include "Rect.h"
 
 struct QuadTree
 {
 	Rect area;
 
-	std::vector<Point> points;
+	int count;
+	Point* p;
 
 	QuadTree* NW;
 	QuadTree* NE;
@@ -18,5 +18,6 @@ struct QuadTree
 
 extern "C"
 {
-	
+	void EXPORT qt_add(Point p);
+	void EXPORT qt_delete(QuadTree qt);
 }
