@@ -64,14 +64,18 @@ initRegions(regions, WORLD_SIZE)
 screenRes(800, 600, 32, 1, 0)
 
 dim as EVENT e
-dim as integer mx, my
 dim as AuPoint mPos
 dim as boolean runApp = true
 while(runApp)
     if(multikey(sc_escape)) then runApp = false
-    'if(screenEvent(@e)) then
-    
-    mPos = type<AuPoint>(mx, my)
+    if(screenEvent(@e)) then
+        select case e.type
+        case EVENT_MOUSE_MOVE
+            mPos.set(e.x, e.y)
+        case EVENT_MOUSE_EXIT
+            mPos.set(-1,-1)
+        end select
+    end if
     
     screenLock()
     
