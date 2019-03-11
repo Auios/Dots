@@ -3,12 +3,20 @@
 #include "defines.h"
 #include "Rect.h"
 
+struct QuadTreeNode
+{
+	Point p;
+	void* n;
+};
+
 struct QuadTree
 {
 	Rect area;
 
+	int depth;
+	int maxDepth;
 	int count;
-	Point* p;
+	QuadTreeNode* p;
 
 	QuadTree* NW;
 	QuadTree* NE;
@@ -18,6 +26,8 @@ struct QuadTree
 
 extern "C"
 {
-	void EXPORT qt_add(Point p);
+	QuadTree EXPORT qt_create(Rect area, int depth, int maxDepth);
 	void EXPORT qt_delete(QuadTree qt);
+	void EXPORT qt_add(QuadTree qt, void* n);
+	void* EXPORT qt_searchNearest(QuadTree qt, Point p);
 }
