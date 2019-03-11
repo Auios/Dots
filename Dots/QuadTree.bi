@@ -1,18 +1,14 @@
 #pragma once
-type Pnt
-    as integer x
-    as integer y
-end type
 
-type Rect
-    as Pnt topLeft
-    as Pnt botRight
-end type
+#include "pnt.bi"
+#include "rect.bi"
 
 type QuadTreeNode
-    as 
+    as Pnt p
+    as any ptr n
 end type
 
 type QuadTree
-    
+    as integer count
+    as QuadTreeNode n
 end type
