@@ -1,7 +1,7 @@
 #pragma once
 
-#include "AuPoint.bi"
-#include "Entity.bi"
+#include "pnt.bi"
+#include "entity.bi"
 #include "dot.bi"
 
 type dotNode
@@ -20,30 +20,35 @@ constructor dotNode(n as dot ptr)
 end constructor
 
 type Region
-    as AuPoint topLeft, botRight
+    as Pnt topLeft, botRight
     
     as integer count
     as dotNode ptr first, last
     
     declare constructor()
-    declare constructor(topLeft as AuPoint, botRight as AuPoint)
+    declare constructor(topLeft as Pnt, botRight as Pnt)
+    declare destructor()
     
     declare sub init()
     
-    declare function inBoundary(p as AuPoint) as boolean
-    declare function add(n as dot ptr) as boolean
-    declare function remove(n as dot ptr) as boolean
+    declare function inBoundary(p as Pnt) as boolean
+    declare function add(n as Dot ptr) as boolean
+    declare function remove(n as Dot ptr) as boolean
 end type
 
 constructor Region()
 end constructor
 
-constructor Region(topLeft as AuPoint, botRight as AuPoint)
+constructor Region(topLeft as Pnt, botRight as Pnt)
     this.topLeft = topLeft
     this.botRight = botRight
 end constructor
 
-function Region.inBoundary(p as Aupoint) as boolean
+destructor Region()
+    dim as dotNote curr = first->nxt
+end destructor
+
+function Region.inBoundary(p as Pnt) as boolean
     return p.x >= topLeft.x AND p.x < botRight.x AND p.y >= topLeft.y AND p.y < botRight.y
 end function
 
@@ -54,7 +59,7 @@ sub Region.init()
     last->prv = first
 end sub
 
-function Region.add(n as dot ptr) as boolean
+function Region.add(n as Dot ptr) as boolean
     dim as dotNode ptr newNode = new dotNode(n)
     newNode->nxt = last
     newNode->prv = last->prv
@@ -66,7 +71,7 @@ function Region.add(n as dot ptr) as boolean
     return true
 end function
 
-function Region.remove(n as dot ptr) as boolean
+function Region.remove(n as Dot ptr) as boolean
     dim as dotNode ptr curr = first->nxt
     dim as boolean result = false
     while(curr <> last)

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "AuPoint.bi"
+#include "pnt.bi"
 
 type Entity extends Object
-    as AuPoint position
+    as Pnt position
 end type

@@ -1,6 +1,6 @@
 #include "fbgfx.bi"
 
-#include "AuPoint.bi"
+#include "pnt.bi"
 #include "dot.bi"
 #include "region.bi"
 
@@ -10,7 +10,7 @@
 #define PI 3.14159265359
 
 'Short
-#define IDX(x,y,size) (y*size)+x
+#define IDX(x,y,l) (y*l)+x
 
 'Colors
 #define C_WHITE rgb(255, 255, 255)
@@ -22,7 +22,7 @@ randomize(timer())
 
 
 sub initRegions(r as region ptr, worldSize as integer)
-    dim as AuPoint topLeft, botRight
+    dim as Pnt topLeft, botRight
     for y as integer = 0 to worldSize-1
         for x as integer = 0 to worldSize-1
             dim as integer i = IDX(y, x, worldSize)
@@ -39,7 +39,7 @@ sub initDots(d as Dot ptr, count as integer, max_x as integer, max_y as integer)
     next i
 end sub
 
-sub renderRegions(r as region ptr, worldSize as integer, mPos as AuPoint)
+sub renderRegions(r as region ptr, worldSize as integer, mPos as Pnt)
     for y as integer = 0 to worldSize-1
         for x as integer = 0 to worldSize-1
             dim as integer i = IDX(x, y, worldSize)
@@ -54,10 +54,13 @@ sub renderRegions(r as region ptr, worldSize as integer, mPos as AuPoint)
     next y
 end sub
 
-sub addDot(r as region ptr, worldSize as integer, d as Dot ptr)
+sub addDotToWorld(d as Dot ptr, r as region ptr, worldSize as integer)
     for y as integer = 0 to worldSize-1
         for x as integer = 0 to worldSize-1
             dim as integer i = IDX(x, y, worldSize)
+            if(r[i].inBoundary(d->position)) then
+                r[i].add(d)
+            end if
         next x
     next y
 end sub
@@ -79,8 +82,10 @@ end sub
 '----------------
 
 dim as EVENT e
-dim as AuPoint mPos
+dim as Pnt mPos
 dim as boolean runApp = true
+
+dim as integer regionDotCount = 0
 
 dim as region ptr regions = new region[WORLD_SIZE * WORLD_SIZE]
 dim as integer dotCount = 100
@@ -91,7 +96,7 @@ initRegions(regions, WORLD_SIZE)
 print("Done!")
 
 print("Init dots...")
-initDots(dots, dotCount, WORLD_SIZE*REGION_SIZE, WORLD_SIZE*REGION_SIZE)
+initDots(dots, dotCount, WORLD_SIZE * REGION_SIZE, WORLD_SIZE * REGION_SIZE)
 print("Done!")
 
 screenRes(800, 600, 32, 1, 0)
@@ -111,7 +116,7 @@ while(runApp)
     
     cls()
     renderRegions(regions, WORLD_SIZE, mPos)
-    renderDots_raw(dots, dotCount)
+    'renderDots_raw(dots, dotCount)
     draw string(15, 15), str(mPos.x)
     draw string(15, 25), str(mPos.y)
     draw string(15, 35), str(regionDotCount)
