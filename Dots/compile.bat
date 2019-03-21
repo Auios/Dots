@@ -1,1 +1,3 @@
-fbc *.bas -x DotsProject.exe
+@echo off
+fbc dots.bas -x DotsProject.exe
+pause
