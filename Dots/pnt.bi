@@ -8,6 +8,7 @@ type Pnt
     declare constructor(x as integer, y as integer)
     declare sub set(x as integer, y as integer)
     declare sub offSet(x as integer, y as integer)
+    declare function toString() as string
 end type
 
 constructor Pnt()
@@ -26,3 +27,7 @@ sub Pnt.offSet(x as integer, y as integer)
     this.x+=x
     this.y+=y
 end sub
+
+function Pnt.toString() as string
+    return "(" & x & "," & y & ")"
+end function
