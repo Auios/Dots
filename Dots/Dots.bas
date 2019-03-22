@@ -77,13 +77,13 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             end select
         end if
         
-        'screenLock()
+        screenLock()
         cls()
         renderQuadTree(@qt)
         renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
         draw string(10, 300), str(globalCount)
         renderQTDebug(300, 15, qt_dbg)
-        'screenUnlock()
+        screenUnlock()
         
         sleep(1, 1)
     wend
