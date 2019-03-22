@@ -12,6 +12,7 @@ end sub
 
 sub renderRect(r as Rect ptr, c as uinteger = rgb(255, 255 ,255))
     line(r->topLeft.x, r->topLeft.y)-(r->botRight.x, r->botRIght.y),c,b
+    line(r->topLeft.x, r->topLeft.y)-(r->botRight.x, r->botRIght.y),c
 end sub
 
 sub renderQuadTree(qt as QuadTree ptr)
@@ -46,7 +47,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as QuadTree ptr qt_dbg = @qt
     dim as integer globalCount = 0
     
-    if(false) then
+    if(true) then
         for i as integer = 0 to 19
             dim as Pnt p = Pnt(200*rnd(), 200*rnd())
             if(qt.insert(p)) then globalCount+=1
@@ -76,13 +77,13 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             end select
         end if
         
-        screenLock()
+        'screenLock()
         cls()
         renderQuadTree(@qt)
         renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
         draw string(10, 300), str(globalCount)
         renderQTDebug(300, 15, qt_dbg)
-        screenUnlock()
+        'screenUnlock()
         
         sleep(1, 1)
     wend

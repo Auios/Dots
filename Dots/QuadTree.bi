@@ -47,7 +47,8 @@ function QuadTree.insert(p as Pnt, d as any ptr = 0) as boolean
             result = true
         else
             if(NOT this.divided) then this.subDivide()
-            if(this.nw->insert(p, d) OR this.ne->insert(p, d) OR this.sw->insert(p, d) OR this.se->insert(p, d)) then result = true
+            echo("Test: " & this.sw->boundary.toString())
+            result = this.nw->insert(p, d) OR this.ne->insert(p, d) OR this.sw->insert(p, d) OR this.se->insert(p, d)
         end if
     end if
     return result
