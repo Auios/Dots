@@ -1,14 +1,10 @@
 #include "fbgfx.bi"
-#include "crt/stdio.bi"
 #include "quadtree.bi"
+#include "sys.bi"
 
 using fb
 
 randomize(1)
-
-sub echo(s as string)
-    printf(s & !"\n")
-end sub
 
 sub renderPoint(p as Pnt ptr, r as integer = 1, c as uinteger = rgb(255, 255, 255))
     circle(p->x, p->y), r, c
@@ -50,10 +46,12 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as QuadTree ptr qt_dbg = @qt
     dim as integer globalCount = 0
     
-    for i as integer = 0 to 18
-        dim as Pnt p = Pnt(200*rnd(), 200*rnd())
-        if(qt.insert(p)) then globalCount+=1
-    next i
+    if(false) then
+        for i as integer = 0 to 19
+            dim as Pnt p = Pnt(200*rnd(), 200*rnd())
+            if(qt.insert(p)) then globalCount+=1
+        next i
+    end if
     
     dim as EVENT e
     dim as boolean runApp = true
@@ -72,6 +70,8 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                     if(e.scancode = SC_2) then qt_dbg = qt_dbg->ne
                     if(e.scancode = SC_3) then qt_dbg = qt_dbg->sw
                     if(e.scancode = SC_4) then qt_dbg = qt_dbg->se
+                else
+                    if(e.scancode = SC_D) then qt_dbg->subDivide()
                 end if
             end select
         end if
