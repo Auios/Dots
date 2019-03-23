@@ -8,7 +8,7 @@
 #include "quadtree.bi"
 
 #define QT_SIZE 200
-#define QT_CAP 32
+#define QT_CAP 10
 
 #define BB 8 'Border buffer
 #define CS 8 'Char size
@@ -38,13 +38,13 @@ sub renderRect(r as Rect ptr, c as uinteger = rgb(255, 255 ,255))
     line(r->position.x, r->position.y)-(r->position.x + r->size.x, r->position.y + r->size.y),c,b
 end sub
 
-sub renderQuadTree(qt as QuadTree ptr)
+sub renderQuadTree(qt as QuadTree ptr, dotsOnly as boolean = false)
     if(qt = 0) then return
-    renderRect(@qt->boundary)
-    renderQuadTree(qt->nw)
-    renderQuadTree(qt->ne)
-    renderQuadTree(qt->sw)
-    renderQuadTree(qt->se)
+    if(NOT dotsOnly) then renderRect(@qt->boundary)
+    renderQuadTree(qt->nw, dotsOnly)
+    renderQuadTree(qt->ne, dotsOnly)
+    renderQuadTree(qt->sw, dotsOnly)
+    renderQuadTree(qt->se, dotsOnly)
     
     dim as integer i = 0
     while(i < qt->count)
@@ -98,8 +98,6 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as QuadTree ptr qt_dbg = @qt
     dim as integer globalCount = 0
     
-    globalCount += spamDots(@qt, 10)
-    
     dim as StopWatch w_loop
     dim as StopWatch w_insert
     dim as StopWatch w_qtRender
@@ -133,6 +131,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                 end if
                 
                 if(e.scancode = SC_S) then globalCount+=spamDots(@qt, 10)
+                if(e.scancode = SC_D) then globalCount+=spamDots(@qt, 250, 0, 0, 200, 200)
                 
                 if(e.scancode = SC_C) then
                     qt.reset()
@@ -160,7 +159,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         clearScreen(800, 600, CLEARCOLOR)
         
         w_qtRender.start()
-        renderQuadTree(@qt)
+        renderQuadTree(@qt, true)
         w_qtRender.stop()
         
         renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
