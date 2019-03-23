@@ -1,6 +1,9 @@
 #include "fbgfx.bi"
-#include "quadtree.bi"
+
 #include "sys.bi"
+
+#include "quadtree.bi"
+#include "mouse.bi"
 
 using fb
 
@@ -46,17 +49,17 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as QuadTree ptr qt_dbg = @qt
     dim as integer globalCount = 0
     
-    if(true) then
-        for i as integer = 0 to 19
-            dim as Pnt p = Pnt(200*rnd(), 200*rnd())
-            if(qt.insert(p)) then globalCount+=1
-        next i
-    end if
+'    for i as integer = 0 to 19
+'        dim as Pnt p = Pnt(200*rnd(), 200*rnd())
+'        if(qt.insert(p)) then globalCount+=1
+'    next i
     
+    dim as Mouse ms
     dim as EVENT e
     dim as boolean runApp = true
     while(runApp)
         if(screenEvent(@e)) then
+            ms.update(@e)
             select case e.type
             case EVENT_KEY_PRESS
                 if(e.scancode = SC_ESCAPE) then runApp = false
@@ -73,6 +76,12 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                 else
                     if(e.scancode = SC_D) then qt_dbg->subDivide()
                 end if
+                
+            case EVENT_MOUSE_BUTTON_RELEASE
+                if(e.button = BUTTON_LEFT) then
+                    dim as Pnt p = Pnt(ms.x, ms.y)
+                    if(qt.insert(p)) then globalCount+=1
+                end if
             end select
         end if
         
@@ -82,6 +91,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
         draw string(10, 300), str(globalCount)
         renderQTDebug(300, 15, qt_dbg)
+        draw string(10, 310), str(ms.x) & ", " & str(ms.y)
         screenUnlock()
         
         sleep(1, 1)
