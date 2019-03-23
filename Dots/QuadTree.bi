@@ -24,7 +24,9 @@ type QuadTree
     declare constructor(r as Rect, cap as integer, depth as integer)
     declare function insert(p as Pnt, n as any ptr = 0) as boolean
     declare sub subDivide()
-    declare sub destroy()
+    declare sub deleteChildren()
+    declare sub reset()
+    declare sub cleanup()
 end type
 
 constructor QuadTree()
@@ -59,23 +61,44 @@ sub QuadTree.subDivide()
     this.sw = new QuadTree(this.boundary.get_sw(), this.capacity, this.depth+1)
     this.se = new QuadTree(this.boundary.get_se(), this.capacity, this.depth+1)
     this.divided = true
-    
-'    echo("Dividing: " & this.boundary.toString())
-'    echo("  nw: " & this.nw->boundary.toString())
-'    echo("  ne: " & this.ne->boundary.toString())
-'    echo("  sw: " & this.sw->boundary.toString())
-'    echo("  se: " & this.se->boundary.toString())
-'    echo()
 end sub
 
-sub QuadTree.destroy()
+sub QuadTree.deleteChildren()
     if(this.divided) then
-        this.nw->destroy():this.nw = 0
-        this.ne->destroy():this.ne = 0
-        this.sw->destroy():this.sw = 0
-        this.se->destroy():this.se = 0
+        this.nw->deleteChildren()
+        delete[] this.nw->n
+        delete this.nw
+        this.nw = 0
+        
+        this.ne->deleteChildren()
+        delete[] this.ne->n
+        delete this.ne
+        this.ne = 0
+        
+        this.sw->deleteChildren()
+        delete[] this.sw->n
+        delete this.sw
+        this.sw = 0
+        
+        this.se->deleteChildren()
+        delete[] this.se->n
+        delete this.se
+        this.se = 0
     end if
     this.divided = false
+end sub
+
+sub QuadTree.reset()
+    this.deleteChildren()
     delete[] this.n
-    this.n = 0
+    this.n = new QuadTreeNode[this.capacity]
+    this.count = 0
+end sub
+
+sub QuadTree.cleanup()
+    this.deleteChildren()
+    delete[] this.n
+    this.boundary = Rect(0,0,0,0)
+    this.capacity = 0
+    this.depth = 0
 end sub
