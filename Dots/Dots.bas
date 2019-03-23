@@ -13,6 +13,7 @@
 #define TEXTCOLOR color.dimGray
 #define BORDERCOLOR color.dimGray
 #define BACKGROUNDCOLOR color.silver
+#define DOTCOLOR color.yellow
 
 using fb
 
@@ -44,7 +45,7 @@ sub renderQuadTree(qt as QuadTree ptr)
     
     dim as integer i = 0
     while(i < qt->count)
-        renderPoint(@qt->n[i].p, 2, rgb(255,221,0))
+        renderPoint(@qt->n[i].p, 2, DOTCOLOR)
         i+=1
     wend
 end sub
@@ -86,13 +87,16 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as QuadTree ptr qt_dbg = @qt
     dim as integer globalCount = 0
     
-    dim as StopWatch wtch
+    dim as StopWatch w_insert
+    dim as StopWatch w_loop
+    dim as StopWatch w_qtRender
     
     dim as Mouse ms
     dim as EVENT e
     dim as boolean runApp = true
     
     while(runApp)
+        w_loop.start()
         ms.update()
         if(screenEvent(@e)) then
             select case e.type
@@ -115,28 +119,37 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             case EVENT_MOUSE_BUTTON_PRESS
                 if(e.button = BUTTON_LEFT) then
                     dim as Pnt p = Pnt(ms.x, ms.y)
-                    wtch.reset()
-                    wtch.start()
+                    w_insert.start()
                     if(qt.insert(p)) then globalCount+=1
-                    wtch.stop()
-                end if
-                
-                if(e.button = BUTTON_RIGHT) then
-                    dim as Pnt p = Pnt(ms.x, ms.y)
-                    
+                    w_insert.stop()
                 end if
             end select
         end if
         
+        if(ms.buttons = 2) then
+            dim as Pnt p = Pnt(ms.x, ms.y)
+            w_insert.start()
+            if(qt.insert(p)) then globalCount+=1
+            w_insert.stop()
+        end if
+        
         screenLock()
         clearScreen(800, 600, CLEARCOLOR)
+        
+        w_qtRender.start()
         renderQuadTree(@qt)
+        w_qtRender.stop()
+        
         renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
         renderQTDebug(300, 15, qt_dbg)
         renderMouseDebug(300, 90, @ms)
+        draw string(10, 300), "w_insert: " & w_insert.get()
+        draw string(10, 308), "w_loop: " & w_insert.get()
+        draw string(10, 308), "w_qtRender: " & w_qtRender.get()
         screenUnlock()
         
         sleep(1, 1)
+        w_loop.stop()
     wend
     
     qt.destroy()
