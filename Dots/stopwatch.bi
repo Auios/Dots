@@ -10,6 +10,7 @@ type StopWatch
     declare sub start()
     declare sub stop()
     declare function get() as double
+    declare sub reset()
 end type
 
 sub StopWatch.start()
@@ -24,8 +25,14 @@ end sub
 
 function StopWatch.get() as double
     if(running) then
-        return timer() - _start
+        return (timer() - _start)*1000
     else
-        return _finish - _start
+        return (_finish - _start)*1000
     end if
 end function
+
+sub StopWatch.reset()
+    running = false
+    _start = 0
+    _finish = 0
+end sub
