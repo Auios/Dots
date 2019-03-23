@@ -7,6 +7,9 @@
 #include "stopwatch.bi"
 #include "quadtree.bi"
 
+#define QT_SIZE 200
+#define QT_CAP 32
+
 #define BB 8 'Border buffer
 #define CS 8 'Char size
 #define CLEARCOLOR color.slateGray
@@ -80,10 +83,10 @@ sub renderMouseDebug(x as integer, y as integer, ms as Mouse ptr)
     draw string(x, y), "Position: (" & ms->x & "," & ms->y & ")", TEXTCOLOR:y+=8
 end sub
 
-function spamDots(qt as QuadTree ptr, count as integer, x as integer = 0, y as integer = 0) as integer
+function spamDots(qt as QuadTree ptr, count as integer, x as integer = 0, y as integer = 0, w as integer = 0, h as integer = 0) as integer
     dim as integer added
     for i as integer = 0 to count-1
-        added += iif(qt->insert(Pnt(x, y)), 1, 0)
+        added+=iif(qt->insert(Pnt(iif(w,w*rnd()+x,x),iif(h,h*rnd()+y,y))),1,0)
     next i
     return added
 end function
@@ -91,7 +94,7 @@ end function
 function main(argc as integer, argv as zstring ptr ptr) as integer
     screenRes(800, 600, 32, 1, 0)
     
-    dim as QuadTree qt = QuadTree(Rect(0, 0, 200, 200), 4, 0)
+    dim as QuadTree qt = QuadTree(Rect(0, 0, QT_SIZE, QT_SIZE), QT_CAP, 0)
     dim as QuadTree ptr qt_dbg = @qt
     dim as integer globalCount = 0
     
