@@ -80,6 +80,14 @@ sub renderMouseDebug(x as integer, y as integer, ms as Mouse ptr)
     draw string(x, y), "Position: (" & ms->x & "," & ms->y & ")", TEXTCOLOR:y+=8
 end sub
 
+function spamDots(qt as QuadTree ptr, count as integer, x as integer = 0, y as integer = 0) as integer
+    dim as integer added
+    for i as integer = 0 to count-1
+        added += iif(qt->insert(Pnt(x, y)), 1, 0)
+    next i
+    return added
+end function
+
 function main(argc as integer, argv as zstring ptr ptr) as integer
     screenRes(800, 600, 32, 1, 0)
     
@@ -87,8 +95,10 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as QuadTree ptr qt_dbg = @qt
     dim as integer globalCount = 0
     
-    dim as StopWatch w_insert
+    globalCount += spamDots(@qt, 10)
+    
     dim as StopWatch w_loop
+    dim as StopWatch w_insert
     dim as StopWatch w_qtRender
     
     dim as Mouse ms
@@ -102,11 +112,14 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             select case e.type
             case EVENT_KEY_PRESS
                 if(e.scancode = SC_ESCAPE) then runApp = false
+                
                 if(e.scancode = SC_A) then
                     dim as Pnt p = Pnt(200*rnd(), 200*rnd())
                     if(qt.insert(p)) then globalCount+=1
                 end if
+                
                 if(e.scancode = SC_R) then qt_dbg = @qt
+                
                 if(qt_dbg->divided) then
                     if(e.scancode = SC_1) then qt_dbg = qt_dbg->nw
                     if(e.scancode = SC_2) then qt_dbg = qt_dbg->ne
@@ -115,6 +128,8 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                 else
                     if(e.scancode = SC_D) then qt_dbg->subDivide()
                 end if
+                
+                if(e.scancode = SC_S) then globalCount+=spamDots(@qt, 10)
                 
             case EVENT_MOUSE_BUTTON_PRESS
                 if(e.button = BUTTON_LEFT) then
@@ -143,13 +158,14 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
         renderQTDebug(300, 15, qt_dbg)
         renderMouseDebug(300, 90, @ms)
-        draw string(10, 300), "w_insert: " & w_insert.get()
-        draw string(10, 308), "w_loop: " & w_insert.get()
-        draw string(10, 308), "w_qtRender: " & w_qtRender.get()
+        draw string(10, 292), str(globalCount)
+        draw string(10, 300), "w_loop: " & w_loop.get()
+        draw string(10, 308), "w_insert: " & w_insert.get()
+        draw string(10, 316), "w_qtRender: " & w_qtRender.get()
         screenUnlock()
         
-        sleep(1, 1)
         w_loop.stop()
+        sleep(1, 1)
     wend
     
     qt.destroy()
