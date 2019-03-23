@@ -131,6 +131,11 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                 
                 if(e.scancode = SC_S) then globalCount+=spamDots(@qt, 10)
                 
+                if(e.scancode = SC_C) then
+                    qt.reset()
+                    globalCount = qt.count
+                end if
+                
             case EVENT_MOUSE_BUTTON_PRESS
                 if(e.button = BUTTON_LEFT) then
                     dim as Pnt p = Pnt(ms.x, ms.y)
@@ -168,7 +173,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         sleep(1, 1)
     wend
     
-    qt.destroy()
+    qt.cleanup()
     
     return 0
 end function
