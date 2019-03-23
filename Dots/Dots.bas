@@ -62,6 +62,8 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as QuadTree ptr qt_dbg = @qt
     dim as integer globalCount = 0
     
+    dim as StopWatch wtch
+    
     dim as Mouse ms
     dim as EVENT e
     dim as boolean runApp = true
@@ -89,7 +91,9 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             case EVENT_MOUSE_BUTTON_PRESS
                 if(e.button = BUTTON_LEFT) then
                     dim as Pnt p = Pnt(ms.x, ms.y)
+                    wtch.start()
                     if(qt.insert(p)) then globalCount+=1
+                    wtch.end()
                 end if
             end select
         end if
@@ -98,9 +102,10 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         clearScreen(800, 600, rgb(128, 128, 128))
         renderQuadTree(@qt)
         renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
-        draw string(10, 300), str(globalCount)
         renderQTDebug(300, 15, qt_dbg)
+        draw string(10, 300), str(globalCount)
         draw string(10, 310), str(ms.x) & ", " & str(ms.y)
+        draw string(10, 330), str(ms.x) & ", " & str(ms.y)
         screenUnlock()
         
         sleep(1, 1)
