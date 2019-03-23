@@ -1,8 +1,5 @@
 #pragma once
 
-' You must stop the StopWatch before getting its result. You cannot get
-'   its result while it is running.
-
 type StopWatch
     private:
     dim as boolean running = false
@@ -27,7 +24,7 @@ sub StopWatch.stop()
 end sub
 
 function StopWatch.get() as double
-    return iif(running, 0, _result)
+    return _result
 end function
 
 sub StopWatch.reset()
