@@ -2,15 +2,48 @@
 
 #include "sys.bi"
 
-#include "quadtree.bi"
 #include "mouse.bi"
+#include "stopwatch.bi"
+#include "quadtree.bi"
+
+'Border buffer
+#define BB 8
+'Char size
+#define CS 8
 
 using fb
 
 randomize(1)
 
-sub clearScreen(wdth as long, hght as long, c as uinteger = rgb(0, 0, 0))
+enum color
+    black =         rgb(0, 0, 0)
+    darkGray =      rgb(100, 100, 100)
+    gray =          rgb(128, 128, 128)
+    lightGray =     rgb(200, 200, 200)
+    
+    white =         rgb(255, 255, 255)
+    red =           rgb(255, 0, 0)
+    green =         rgb(255, 0, 0)
+    blue =          rgb(0, 0, 255)
+    yellow =        rgb(255, 255, 0)
+    cyan =          rgb(0, 255, 255)
+    magenta =       rgb(255, 0, 255)
+    
+    darkRed =       rgb(200, 100, 100)
+    darkGreen =     rgb(100, 200, 100)
+    darkBlue =      rgb(100, 100, 200)
+    darkYellow =    rgb(200, 200, 100)
+    darkCyan =      rgb(100, 200, 200)
+    darkMagenta =   rgb(200, 100, 200)
+    
+end enum
+
+sub clearScreen(wdth as long, hght as long, c as uinteger = color.black)
     line(0,0)-(wdth, hght), c, bf
+end sub
+
+sub renderForm(x as integer, y as integer, w as integer, h as integer)
+    
 end sub
 
 sub renderPoint(p as Pnt ptr, r as integer = 1, c as uinteger = rgb(255, 255, 255))
@@ -37,22 +70,33 @@ sub renderQuadTree(qt as QuadTree ptr)
 end sub
 
 sub renderQTDebug(x as integer, y as integer, qt as QuadTree ptr)
-    dim as uinteger light = rgb(200, 200, 200)
-    dim as uinteger dark = rgb(100, 100, 100)
-    dim as integer bb = 8 ' Border buffer
-    dim as integer wdth = 32
+    dim as integer wdth = 31
     dim as integer hght = 7
-    line(x,y)-(x+wdth*8+bb, y+hght*8+bb),light,bf
-    line(x,y)-(x+wdth*8+bb, y+hght*8+bb),dark,b
+    line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),color.lightGray,bf
+    line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),color.darkGray,b
+    x+=BB/2
+    y+=BB/2
+    draw string(x, y), "Depth: " & qt->depth, color.darkGray:y+=CS
+    draw string(x, y), "Boundary: " & qt->boundary.toString(), color.darkGray:y+=CS
+    draw string(x, y), "Count: " & qt->count, color.darkGray:y+=CS
+    draw string(x, y), "ne: " & qt->ne, color.darkGray:y+=CS
+    draw string(x, y), "nw: " & qt->nw, color.darkGray:y+=CS
+    draw string(x, y), "se: " & qt->se, color.darkGray:y+=CS
+    draw string(x, y), "sw: " & qt->sw, color.darkGray:y+=CS
+end sub
+
+sub renderMouseDebug(x as integer, y as integer, ms as Mouse ptr)
+    dim as integer wdth = 21
+    dim as integer hght = 5
+    line(x,y)-(x+wdth*CS+bb, y+hght*CS+bb),color.lightGray,bf
+    line(x,y)-(x+wdth*CS+bb, y+hght*CS+bb),color.darkGray,b
     x+=bb/2
     y+=bb/2
-    draw string(x, y), "Depth: " & qt->depth, dark:y+=8
-    draw string(x, y), "Boundary: " & qt->boundary.toString(), dark:y+=8
-    draw string(x, y), "Count: " & qt->count, dark:y+=8
-    draw string(x, y), "ne: " & qt->ne, dark:y+=8
-    draw string(x, y), "nw: " & qt->nw, dark:y+=8
-    draw string(x, y), "se: " & qt->se, dark:y+=8
-    draw string(x, y), "sw: " & qt->sw, dark:y+=8
+    draw string(x, y), "State: " & ms->state, color.darkGray:y+=8
+    draw string(x, y), "Buttons: " & ms->buttons, color.darkGray:y+=8
+    draw string(x, y), "Wheel: " & ms->wheel, color.darkGray:y+=8
+    draw string(x, y), "Clip: " & ms->clip, color.darkGray:y+=8
+    draw string(x, y), "Position: (" & ms->x & "," & ms->y & ")", color.darkGray:y+=8
 end sub
 
 function main(argc as integer, argv as zstring ptr ptr) as integer
@@ -91,21 +135,25 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             case EVENT_MOUSE_BUTTON_PRESS
                 if(e.button = BUTTON_LEFT) then
                     dim as Pnt p = Pnt(ms.x, ms.y)
+                    wtch.reset()
                     wtch.start()
                     if(qt.insert(p)) then globalCount+=1
-                    wtch.end()
+                    wtch.stop()
+                end if
+                
+                if(e.button = BUTTON_RIGHT) then
+                    dim as Pnt p = Pnt(ms.x, ms.y)
+                    
                 end if
             end select
         end if
         
         screenLock()
-        clearScreen(800, 600, rgb(128, 128, 128))
+        clearScreen(800, 600, color.gray)
         renderQuadTree(@qt)
         renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
         renderQTDebug(300, 15, qt_dbg)
-        draw string(10, 300), str(globalCount)
-        draw string(10, 310), str(ms.x) & ", " & str(ms.y)
-        draw string(10, 330), str(ms.x) & ", " & str(ms.y)
+        renderMouseDebug(300, 90, @ms)
         screenUnlock()
         
         sleep(1, 1)
