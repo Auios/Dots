@@ -33,13 +33,20 @@ sub renderQuadTree(qt as QuadTree ptr)
 end sub
 
 sub renderQTDebug(x as integer, y as integer, qt as QuadTree ptr)
-    draw string(x, y), "Depth: " & qt->depth:y+=10
-    draw string(x, y), "Boundary: " & qt->boundary.toString():y+=10
-    draw string(x, y), "Count: " & qt->count:y+=10
-    draw string(x, y), "ne: " & qt->ne:y+=10
-    draw string(x, y), "nw: " & qt->nw:y+=10
-    draw string(x, y), "se: " & qt->se:y+=10
-    draw string(x, y), "sw: " & qt->sw:y+=10
+    dim as integer bb = 8 ' Border buffer
+    dim as integer wdth = 32
+    dim as integer hght = 7
+    line(x,y)-(x+wdth*8+bb, y+hght*8+bb),rgb(200, 200, 200),bf
+    line(x,y)-(x+wdth*8+bb, y+hght*8+bb),rgb(100, 100, 100),b
+    x+=bb/2
+    y+=bb/2
+    draw string(x, y), "Depth: " & qt->depth:y+=8
+    draw string(x, y), "Boundary: " & qt->boundary.toString():y+=8
+    draw string(x, y), "Count: " & qt->count:y+=8
+    draw string(x, y), "ne: " & qt->ne:y+=8
+    draw string(x, y), "nw: " & qt->nw:y+=8
+    draw string(x, y), "se: " & qt->se:y+=8
+    draw string(x, y), "sw: " & qt->sw:y+=8
 end sub
 
 function main(argc as integer, argv as zstring ptr ptr) as integer
@@ -59,7 +66,6 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as boolean runApp = true
     while(runApp)
         if(screenEvent(@e)) then
-            ms.update(@e)
             select case e.type
             case EVENT_KEY_PRESS
                 if(e.scancode = SC_ESCAPE) then runApp = false
@@ -77,9 +83,9 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                     if(e.scancode = SC_D) then qt_dbg->subDivide()
                 end if
                 
-            case EVENT_MOUSE_BUTTON_RELEASE
+            case EVENT_MOUSE_BUTTON_PRESS
                 if(e.button = BUTTON_LEFT) then
-                    dim as Pnt p = Pnt(ms.x, ms.y)
+                    dim as Pnt p = Pnt(e.x, e.y)
                     if(qt.insert(p)) then globalCount+=1
                 end if
             end select
