@@ -1,10 +1,13 @@
 #pragma once
 
+' You must stop the StopWatch before getting its result. You cannot get
+'   its result while it is running.
+
 type StopWatch
     private:
     dim as boolean running = false
     dim as double _start
-    dim as double _finish
+    dim as double _result ' in ms
     
     public:
     declare sub start()
@@ -19,20 +22,16 @@ sub StopWatch.start()
 end sub
 
 sub StopWatch.stop()
-    _finish = timer()
+    _result = (timer() - _start)*1000
     running = false
 end sub
 
 function StopWatch.get() as double
-    if(running) then
-        return (timer() - _start)*1000
-    else
-        return (_finish - _start)*1000
-    end if
+    return iif(running, 0, _result)
 end function
 
 sub StopWatch.reset()
     running = false
     _start = 0
-    _finish = 0
+    _result = 0
 end sub
