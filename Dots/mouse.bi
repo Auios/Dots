@@ -5,19 +5,16 @@
 using fb
 
 type Mouse
+    as long state
     as long x, y
     as long dx, dy
-    as long button
+    as long buttons
     as long wheel
+    as long clip
     
-    declare sub update(e as EVENT ptr)
+    declare sub update()
 end type
 
-sub Mouse.update(e as EVENT ptr)
-    this.x = e->x
-    this.y = e->y
-    this.dx = e->dx
-    this.dy = e->dy
-    this.button = e->button
-    this.wheel = e->z
+sub Mouse.update()
+    this.state = getMouse(this.x, this.y, this.wheel, this.buttons, this.clip)
 end sub
