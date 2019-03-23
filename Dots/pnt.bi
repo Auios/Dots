@@ -6,6 +6,7 @@ type Pnt
     
     declare constructor()
     declare constructor(x as integer, y as integer)
+    
     declare sub set(x as integer, y as integer)
     declare sub offSet(x as integer, y as integer)
     declare function toString() as string
@@ -23,9 +24,9 @@ sub Pnt.set(x as integer, y as integer)
     this.y = y
 end sub
 
-sub Pnt.offSet(x as integer, y as integer)
-    this.x+=x
-    this.y+=y
+sub Pnt.offSet(dx as integer, dy as integer)
+    this.x+=dx
+    this.y+=dy
 end sub
 
 function Pnt.toString() as string

@@ -11,8 +11,7 @@ sub renderPoint(p as Pnt ptr, r as integer = 1, c as uinteger = rgb(255, 255, 25
 end sub
 
 sub renderRect(r as Rect ptr, c as uinteger = rgb(255, 255 ,255))
-    line(r->topLeft.x, r->topLeft.y)-(r->botRight.x, r->botRIght.y),c,b
-    line(r->topLeft.x, r->topLeft.y)-(r->botRight.x, r->botRIght.y),c
+    line(r->position.x, r->position.y)-(r->position.x + r->size.x, r->position.y + r->size.y),c,b
 end sub
 
 sub renderQuadTree(qt as QuadTree ptr)

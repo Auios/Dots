@@ -60,12 +60,12 @@ sub QuadTree.subDivide()
     this.se = new QuadTree(this.boundary.get_se(), this.capacity, this.depth+1)
     this.divided = true
     
-    echo("Dividing: " & this.boundary.toString())
-    echo("  nw: " & this.nw->boundary.toString())
-    echo("  ne: " & this.ne->boundary.toString())
-    echo("  sw: " & this.sw->boundary.toString())
-    echo("  se: " & this.se->boundary.toString())
-    echo()
+'    echo("Dividing: " & this.boundary.toString())
+'    echo("  nw: " & this.nw->boundary.toString())
+'    echo("  ne: " & this.ne->boundary.toString())
+'    echo("  sw: " & this.sw->boundary.toString())
+'    echo("  se: " & this.se->boundary.toString())
+'    echo()
 end sub
 
 sub QuadTree.destroy()
