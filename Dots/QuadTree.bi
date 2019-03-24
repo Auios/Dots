@@ -52,8 +52,10 @@ function QuadTree.insert(p as Pnt, d as any ptr = 0) as boolean
             count+=1
             result = true
         else
-            if(NOT this.divided) then this.subDivide()
-            result = this.nw->insert(p, d) OR this.ne->insert(p, d) OR this.sw->insert(p, d) OR this.se->insert(p, d)
+            if(this.boundary.size.x > 1) then
+                if(NOT this.divided) then this.subDivide()
+                result = this.nw->insert(p, d) OR this.ne->insert(p, d) OR this.sw->insert(p, d) OR this.se->insert(p, d)
+            end if
         end if
     end if
     return result
