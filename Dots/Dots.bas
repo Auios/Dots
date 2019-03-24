@@ -57,8 +57,9 @@ end sub
 sub renderQTDebug(x as integer, y as integer, qt as QuadTree ptr)
     dim as integer wdth = 31
     dim as integer hght = 9
-    line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BACKGROUNDCOLOR,bf
-    line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BORDERCOLOR,b
+    dim as integer CS_BB = CS + BB
+    line(x,y)-(x+wdth*CS_BB, y+hght*CS_BB),BACKGROUNDCOLOR,bf
+    line(x,y)-(x+wdth*CS_BB, y+hght*CS_BB),BORDERCOLOR,b
     x+=BB\2
     y+=BB\2
     draw string(x, y), "Count(total): " & qt->totalCount(), TEXTCOLOR:y+=CS
@@ -75,10 +76,11 @@ end sub
 sub renderMouseDebug(x as integer, y as integer, ms as Mouse ptr)
     dim as integer wdth = 21
     dim as integer hght = 5
-    line(x,y)-(x+wdth*CS+bb, y+hght*CS+bb),BACKGROUNDCOLOR,bf
-    line(x,y)-(x+wdth*CS+bb, y+hght*CS+bb),BORDERCOLOR,b
-    x+=bb\2
-    y+=bb\2
+    dim as integer CS_BB = CS + BB
+    line(x,y)-(x+wdth*CS_BB, y+hght*CS_BB),BACKGROUNDCOLOR,bf
+    line(x,y)-(x+wdth*CS_BB, y+hght*CS_BB),BORDERCOLOR,b
+    x+=BB\2
+    y+=BB\2
     draw string(x, y), "State: " & ms->state, TEXTCOLOR:y+=8
     draw string(x, y), "Buttons: " & ms->buttons, TEXTCOLOR:y+=8
     draw string(x, y), "Wheel: " & ms->wheel, TEXTCOLOR:y+=8
@@ -115,7 +117,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as EVENT e
     dim as boolean runApp = true
     
-    'globalCount+=spamDots(@qt, 1000000, 0, 0, QT_SIZE\2, QT_SIZE\2)
+    globalCount+=spamDots(@qt, 1000000, 0, 0, QT_SIZE\2, QT_SIZE\2)
     
     ' ===== Main loop =====
     while(runApp)

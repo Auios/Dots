@@ -32,15 +32,19 @@ function Rect.get_nw() as Rect
 end function
 
 function Rect.get_ne() as Rect
-    return Rect(this.position.x + this.size.x\2, this.position.y, this.size.x\2, this.size.y\2)
+    dim as integer halfSizeX = this.size.x\2
+    return Rect(this.position.x + halfSizeX, this.position.y, halfSizeX, this.size.y\2)
 end function
 
 function Rect.get_sw() as Rect
-    return Rect(this.position.x, this.position.y + this.size.y\2, this.size.x\2, this.size.y\2)
+    dim as integer halfSizeY = this.size.y\2
+    return Rect(this.position.x, this.position.y + halfSizeY, this.size.x\2, halfSizeY)
 end function
 
 function Rect.get_se() as Rect
-    return Rect(this.position.x + this.size.x\2, this.position.y + this.size.y\2, this.size.x\2, this.size.y\2)
+    dim as integer halfSizeX = this.size.x\2
+    dim as integer halfSizeY = this.size.y\2
+    return Rect(this.position.x + halfSizeX, this.position.y + halfSizeY, halfSizeX, halfSizeY)
 end function
 
 sub Rect.set(x as integer, y as integer, w as integer, h as integer)
