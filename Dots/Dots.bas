@@ -1,11 +1,10 @@
 #include "fbgfx.bi"
 #include "color.bi"
-
 #include "sys.bi"
-
 #include "mouse.bi"
 #include "stopwatch.bi"
 #include "quadtree.bi"
+#include "dot.bi"
 
 #define QT_SIZE 200
 #define QT_CAP 10
@@ -81,6 +80,10 @@ sub renderMouseDebug(x as integer, y as integer, ms as Mouse ptr)
     draw string(x, y), "Wheel: " & ms->wheel, TEXTCOLOR:y+=8
     draw string(x, y), "Clip: " & ms->clip, TEXTCOLOR:y+=8
     draw string(x, y), "Position: (" & ms->x & "," & ms->y & ")", TEXTCOLOR:y+=8
+end sub
+
+sub buildQT(qt as QuadTree ptr, d as Dot ptr, size as integer)
+    
 end sub
 
 function spamDots(qt as QuadTree ptr, count as integer, x as integer = 0, y as integer = 0, w as integer = 0, h as integer = 0) as integer
@@ -165,7 +168,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
         renderQTDebug(300, 15, qt_dbg)
         renderMouseDebug(300, 90, @ms)
-        draw string(10, 292), str(globalCount)
+        'draw string(10, 292), str(qt.count())
         draw string(10, 300), "w_loop: " & w_loop.get()
         draw string(10, 308), "w_insert: " & w_insert.get()
         draw string(10, 316), "w_qtRender: " & w_qtRender.get()
