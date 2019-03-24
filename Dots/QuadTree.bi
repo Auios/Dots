@@ -40,7 +40,7 @@ type QuadTree
     declare constructor()
     declare constructor(r as Rect, cap as integer, depth as integer)
     declare function insert(p as Pnt, n as any ptr = 0) as boolean
-    declare function search(p as Pnt, r as integer, nodes as QuadTreeNode ptr, size as integer ptr) as boolean
+    declare function search(p as Pnt, r as integer, nodes as QuadTreeNode ptr, count as integer ptr) as boolean
     declare function count() as integer
     declare sub subDivide()
     declare sub deleteChildren()
@@ -61,7 +61,7 @@ end constructor
 function QuadTree.insert(p as Pnt, d as any ptr = 0) as boolean
     dim as boolean result = false
     if(this.boundary.contains(@p)) then
-        if(_count < capacity) then
+        if(count < capacity) then
             this.n[_count].p = p
             this.n[_count].d = d
             _count+=1
@@ -84,7 +84,7 @@ function QuadTree.search(p as Pnt, r as integer, nodes as QuadTreeNode ptr, size
 end function
 
 function QuadTree.count() as integer
-    dim as integer result = this._count
+    dim as integer result = this.count
     if(this.divided) then
         result+=this.ne->count()
         result+=this.nw->count()
