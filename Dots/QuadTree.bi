@@ -40,8 +40,11 @@ type QuadTree
     declare constructor()
     declare constructor(r as Rect, cap as integer, depth as integer)
     declare function insert(p as Pnt, n as any ptr = 0) as boolean
+<<<<<<< HEAD
     declare function search(p as Pnt, r as integer, nodes as QuadTreeNode ptr, size as integer ptr) as boolean
     declare function count() as integer
+=======
+>>>>>>> parent of fc3009e... QT Search Begin
     declare sub subDivide()
     declare sub deleteChildren()
     declare sub reset()
@@ -74,6 +77,7 @@ function QuadTree.insert(p as Pnt, d as any ptr = 0) as boolean
     return result
 end function
 
+<<<<<<< HEAD
 function QuadTree.search(p as Pnt, r as integer, nodes as QuadTreeNode ptr, size as integer ptr) as boolean
     ' Return true if anything was found. False if nothing was found.
     if(nodes = 0 OR size = 0) then return false ' Exit if programmer did not provide a spot for us to put the data
@@ -94,6 +98,8 @@ function QuadTree.count() as integer
     return result
 end function
 
+=======
+>>>>>>> parent of fc3009e... QT Search Begin
 sub QuadTree.subDivide()
     this.nw = new QuadTree(this.boundary.get_nw(), this.capacity, this.depth+1)
     this.ne = new QuadTree(this.boundary.get_ne(), this.capacity, this.depth+1)
