@@ -10,10 +10,27 @@ type QuadTreeNode
     as any ptr d
 end type
 
+type QuadTreeResultNode
+    as QuadTreeNode ptr n
+    as QuadTreeResultNode ptr nxt
+    
+    declare function count() as integer
+end type
+
+function QuadTreeResultNode.count() as integer
+    dim as integer result = 0
+    dim as QuadTreeResultNode ptr curr = @this
+    while(curr)
+        result+=1
+        curr = curr->nxt
+    wend
+    return result
+end function
+
 type QuadTree
     as Rect boundary
     as integer capacity
-    as integer count
+    as integer _count
     as QuadTreeNode ptr n
     as boolean divided
     as integer depth
@@ -23,7 +40,8 @@ type QuadTree
     declare constructor()
     declare constructor(r as Rect, cap as integer, depth as integer)
     declare function insert(p as Pnt, n as any ptr = 0) as boolean
-    declare function search(p as Pnt, nodes as QuadTreeNode ptr, count as integer ptr) as boolean
+    declare function search(p as Pnt, r as integer, nodes as QuadTreeNode ptr, count as integer ptr) as boolean
+    declare function count() as integer
     declare sub subDivide()
     declare sub deleteChildren()
     declare sub reset()
@@ -44,9 +62,9 @@ function QuadTree.insert(p as Pnt, d as any ptr = 0) as boolean
     dim as boolean result = false
     if(this.boundary.contains(@p)) then
         if(count < capacity) then
-            this.n[count].p = p
-            this.n[count].d = d
-            count+=1
+            this.n[_count].p = p
+            this.n[_count].d = d
+            _count+=1
             result = true
         else
             if(NOT this.divided) then this.subDivide()
@@ -56,8 +74,24 @@ function QuadTree.insert(p as Pnt, d as any ptr = 0) as boolean
     return result
 end function
 
-function QuadTree.search(p as Pnt, nodes as QuadTreeNode ptr, count as integer ptr) as boolean
-    return false
+function QuadTree.search(p as Pnt, r as integer, nodes as QuadTreeNode ptr, size as integer ptr) as boolean
+    ' Return true if anything was found. False if nothing was found.
+    if(nodes = 0 OR size = 0) then return false ' Exit if programmer did not provide a spot for us to put the data
+    if(NOT this.boundary.contains(@p)) then return false
+    
+    dim as Rect searchArea = Rect(p.x-r,p.y-r,p.x+r,p.y+r)
+    
+end function
+
+function QuadTree.count() as integer
+    dim as integer result = this.count
+    if(this.divided) then
+        result+=this.ne->count()
+        result+=this.nw->count()
+        result+=this.se->count()
+        result+=this.sw->count()
+    end if
+    return result
 end function
 
 sub QuadTree.subDivide()
@@ -97,7 +131,7 @@ sub QuadTree.reset()
     this.deleteChildren()
     delete[] this.n
     this.n = new QuadTreeNode[this.capacity]
-    this.count = 0
+    this._count = 0
 end sub
 
 sub QuadTree.cleanup()
