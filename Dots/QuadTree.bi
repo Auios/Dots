@@ -23,7 +23,6 @@ type QuadTree
     declare constructor()
     declare constructor(r as Rect, cap as integer, depth as integer)
     declare function insert(p as Pnt, n as any ptr = 0) as boolean
-    declare function search(p as Pnt, nodes as QuadTreeNode ptr, count as integer ptr) as boolean
     declare sub subDivide()
     declare sub deleteChildren()
     declare sub reset()
@@ -54,10 +53,6 @@ function QuadTree.insert(p as Pnt, d as any ptr = 0) as boolean
         end if
     end if
     return result
-end function
-
-function QuadTree.search(p as Pnt, nodes as QuadTreeNode ptr, count as integer ptr) as boolean
-    return false
 end function
 
 sub QuadTree.subDivide()
