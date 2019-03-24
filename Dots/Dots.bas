@@ -1,4 +1,5 @@
 #include "fbgfx.bi"
+
 #include "color.bi"
 #include "sys.bi"
 #include "mouse.bi"
@@ -54,11 +55,12 @@ end sub
 
 sub renderQTDebug(x as integer, y as integer, qt as QuadTree ptr)
     dim as integer wdth = 31
-    dim as integer hght = 7
+    dim as integer hght = 8
     line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BACKGROUNDCOLOR,bf
     line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BORDERCOLOR,b
     x+=BB/2
     y+=BB/2
+    draw string(x, y), "Count: " & qt->count(), TEXTCOLOR:y+=CS
     draw string(x, y), "Depth: " & qt->depth, TEXTCOLOR:y+=CS
     draw string(x, y), "Boundary: " & qt->boundary.toString(), TEXTCOLOR:y+=CS
     draw string(x, y), "Count: " & qt->count, TEXTCOLOR:y+=CS
@@ -168,7 +170,6 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
         renderQTDebug(300, 15, qt_dbg)
         renderMouseDebug(300, 90, @ms)
-        'draw string(10, 292), str(qt.count())
         draw string(10, 300), "w_loop: " & w_loop.get()
         draw string(10, 308), "w_insert: " & w_insert.get()
         draw string(10, 316), "w_qtRender: " & w_qtRender.get()
