@@ -24,7 +24,7 @@ type QuadTree
     declare constructor(r as Rect, cap as integer, depth as integer)
     declare function insert(p as Pnt, n as any ptr = 0) as boolean
     declare function search(p as Pnt, nodes as QuadTreeNode ptr, count as integer ptr) as boolean
-    declare function totalCount() as integer
+    declare function totalCount(n as string) as integer
     declare sub subDivide()
     declare sub deleteChildren()
     declare sub reset()
@@ -61,14 +61,15 @@ function QuadTree.search(p as Pnt, nodes as QuadTreeNode ptr, count as integer p
     return false
 end function
 
-function QuadTree.totalCount() as integer
+function QuadTree.totalCount(n as string) as integer
     dim as integer result = this.count
     if(this.divided) then
-        result+=this.ne->totalCount()
-        result+=this.nw->totalCount()
-        result+=this.se->totalCount()
-        result+=this.sw->totalCount()
+        result+=this.ne->totalCount("ne")
+        result+=this.nw->totalCount("nw")
+        result+=this.se->totalCount("se")
+        result+=this.sw->totalCount("sw")
     end if
+    echo("=== " & this.depth & " - " & n & " ===")
     return result
 end function
 

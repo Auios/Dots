@@ -7,7 +7,7 @@
 #include "dot.bi"
 
 #define QT_SIZE 200
-#define QT_CAP 10
+#define QT_CAP 1
 
 #define BB 8 'Border buffer
 #define CS 8 'Char size
@@ -59,7 +59,8 @@ sub renderQTDebug(x as integer, y as integer, qt as QuadTree ptr)
     line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BORDERCOLOR,b
     x+=BB/2
     y+=BB/2
-    draw string(x, y), "Depth: " & qt->totalCount(), TEXTCOLOR:y+=CS
+    draw string(x, y), "Count: " & qt->totalCount("root"), TEXTCOLOR:y+=CS
+    echo()
     draw string(x, y), "Depth: " & qt->depth, TEXTCOLOR:y+=CS
     draw string(x, y), "Boundary: " & qt->boundary.toString(), TEXTCOLOR:y+=CS
     draw string(x, y), "Count: " & qt->count, TEXTCOLOR:y+=CS
@@ -110,39 +111,57 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as EVENT e
     dim as boolean runApp = true
     
+    globalCount+=spamDots(@qt, 10)
+    
+    ' ===== Main loop =====
     while(runApp)
         w_loop.start()
+        
+        ' ===== Updates =====
         ms.update()
+        
+        ' ===== Events ======
         if(screenEvent(@e)) then
             select case e.type
+            ' ===== Key press =====
             case EVENT_KEY_PRESS
+                ' ===== ESCAPE - close application =====
                 if(e.scancode = SC_ESCAPE) then runApp = false
                 
+                ' ===== A - Add single random dot =====
                 if(e.scancode = SC_A) then
                     dim as Pnt p = Pnt(200*rnd(), 200*rnd())
                     if(qt.insert(p)) then globalCount+=1
                 end if
                 
+                ' ===== R =====
                 if(e.scancode = SC_R) then qt_dbg = @qt
                 
+                ' ===== 1 - 4 - Step into children, D - divide =====
                 if(qt_dbg->divided) then
                     if(e.scancode = SC_1) then qt_dbg = qt_dbg->nw
                     if(e.scancode = SC_2) then qt_dbg = qt_dbg->ne
                     if(e.scancode = SC_3) then qt_dbg = qt_dbg->sw
                     if(e.scancode = SC_4) then qt_dbg = qt_dbg->se
                 else
-                    if(e.scancode = SC_D) then qt_dbg->subDivide()
+                    'if(e.scancode = SC_D) then qt_dbg->subDivide()
                 end if
                 
+                ' ===== S - Spam dots in corner =====
                 if(e.scancode = SC_S) then globalCount+=spamDots(@qt, 10)
+                
+                ' ===== D - Spam dots randomly=====
                 if(e.scancode = SC_D) then globalCount+=spamDots(@qt, 250, 0, 0, 200, 200)
                 
+                ' ===== C - Clear =====
                 if(e.scancode = SC_C) then
                     qt.reset()
                     globalCount = qt.count
                 end if
                 
+            ' ===== Mouse =====
             case EVENT_MOUSE_BUTTON_PRESS
+                ' ===== Left button - Add dot where mouse is =====
                 if(e.button = BUTTON_LEFT) then
                     dim as Pnt p = Pnt(ms.x, ms.y)
                     w_insert.start()
@@ -159,11 +178,12 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             w_insert.stop()
         end if
         
+        ' ===== Rendering =====
         screenLock()
         clearScreen(800, 600, CLEARCOLOR)
         
         w_qtRender.start()
-        renderQuadTree(@qt, true)
+        renderQuadTree(@qt, false)
         w_qtRender.stop()
         
         renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
@@ -173,7 +193,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         draw string(10, 308), "w_insert: " & w_insert.get()
         draw string(10, 316), "w_qtRender: " & w_qtRender.get()
         screenUnlock()
-        
+        sleep()
         w_loop.stop()
         sleep(1, 1)
     wend
