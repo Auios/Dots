@@ -11,6 +11,7 @@ type QuadTreeNode
 end type
 
 type QuadTree
+    as QuadTree ptr parent
     as Rect boundary
     as integer capacity
     as integer count
@@ -21,10 +22,10 @@ type QuadTree
     as QuadTree ptr nw, ne, sw, se
     
     declare constructor()
-    declare constructor(r as Rect, cap as integer, depth as integer)
+    declare constructor(r as Rect, cap as integer, depth as integer, parent as QuadTree ptr = 0)
     declare function insert(p as Pnt, n as any ptr = 0) as boolean
     declare function search(p as Pnt, nodes as QuadTreeNode ptr, count as integer ptr) as boolean
-    declare function totalCount(n as string) as integer
+    declare function totalCount() as integer
     declare sub subDivide()
     declare sub deleteChildren()
     declare sub reset()
@@ -34,11 +35,12 @@ end type
 constructor QuadTree()
 end constructor
 
-constructor QuadTree(r as Rect, cap as integer, depth as integer)
-     this.boundary = r
-     this.capacity = cap
-     this.depth = depth
-     this.n = new QuadTreeNode[cap]
+constructor QuadTree(r as Rect, cap as integer, depth as integer, parent as QuadTree ptr = 0)
+    this.parent = parent
+    this.boundary = r
+    this.capacity = cap
+    this.depth = depth
+    this.n = new QuadTreeNode[cap]
 end constructor
 
 function QuadTree.insert(p as Pnt, d as any ptr = 0) as boolean
@@ -61,23 +63,25 @@ function QuadTree.search(p as Pnt, nodes as QuadTreeNode ptr, count as integer p
     return false
 end function
 
-function QuadTree.totalCount(n as string) as integer
+function QuadTree.totalCount() as integer
     dim as integer result = this.count
     if(this.divided) then
-        result+=this.ne->totalCount("ne")
-        result+=this.nw->totalCount("nw")
-        result+=this.se->totalCount("se")
-        result+=this.sw->totalCount("sw")
+        result+=this.ne->totalCount()
+        result+=this.nw->totalCount()
+        result+=this.se->totalCount()
+        result+=this.sw->totalCount()
     end if
-    echo("=== " & this.depth & " - " & n & " ===")
+    'echo("=== " & this.depth & " - " & n & " ===")
+    'echo("Count: " & this.count)
+    'echo()
     return result
 end function
 
 sub QuadTree.subDivide()
-    this.nw = new QuadTree(this.boundary.get_nw(), this.capacity, this.depth+1)
-    this.ne = new QuadTree(this.boundary.get_ne(), this.capacity, this.depth+1)
-    this.sw = new QuadTree(this.boundary.get_sw(), this.capacity, this.depth+1)
-    this.se = new QuadTree(this.boundary.get_se(), this.capacity, this.depth+1)
+    this.nw = new QuadTree(this.boundary.get_nw(), this.capacity, this.depth+1, @this)
+    this.ne = new QuadTree(this.boundary.get_ne(), this.capacity, this.depth+1, @this)
+    this.sw = new QuadTree(this.boundary.get_sw(), this.capacity, this.depth+1, @this)
+    this.se = new QuadTree(this.boundary.get_se(), this.capacity, this.depth+1, @this)
     this.divided = true
 end sub
 

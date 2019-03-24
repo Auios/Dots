@@ -1,4 +1,6 @@
 #include "fbgfx.bi"
+#include "pnt.bi"
+#include "rect.bi"
 #include "color.bi"
 #include "sys.bi"
 #include "mouse.bi"
@@ -29,41 +31,41 @@ sub renderForm(x as integer, y as integer, w as integer, h as integer)
     
 end sub
 
-sub renderPoint(p as Pnt ptr, r as integer = 1, c as uinteger = rgb(255, 255, 255))
-    circle(p->x, p->y), r, c
+sub renderPoint(p as Pnt ptr, r as integer = 1, zoom as single = 1, c as uinteger = rgb(255, 255, 255))
+    circle(p->x * zoom, p->y * zoom), r, c
 end sub
 
-sub renderRect(r as Rect ptr, c as uinteger = rgb(255, 255 ,255))
-    line(r->position.x, r->position.y)-(r->position.x + r->size.x, r->position.y + r->size.y),c,b
+sub renderRect(r as Rect ptr, zoom as single = 1, c as uinteger = rgb(255, 255 ,255))
+    line(r->position.x * zoom, r->position.y * zoom)-((r->position.x + r->size.x) * zoom, (r->position.y + r->size.y) * zoom),c,b
 end sub
 
-sub renderQuadTree(qt as QuadTree ptr, dotsOnly as boolean = false)
+sub renderQuadTree(qt as QuadTree ptr, zoom as single = 1, dotsOnly as boolean = false)
     if(qt = 0) then return
-    if(NOT dotsOnly) then renderRect(@qt->boundary)
-    renderQuadTree(qt->nw, dotsOnly)
-    renderQuadTree(qt->ne, dotsOnly)
-    renderQuadTree(qt->sw, dotsOnly)
-    renderQuadTree(qt->se, dotsOnly)
+    if(NOT dotsOnly) then renderRect(@qt->boundary, zoom)
+    renderQuadTree(qt->nw, zoom, dotsOnly)
+    renderQuadTree(qt->ne, zoom, dotsOnly)
+    renderQuadTree(qt->sw, zoom, dotsOnly)
+    renderQuadTree(qt->se, zoom, dotsOnly)
     
     dim as integer i = 0
     while(i < qt->count)
-        renderPoint(@qt->n[i].p, 2, DOTCOLOR)
+        renderPoint(@qt->n[i].p, 2, zoom, DOTCOLOR)
         i+=1
     wend
 end sub
 
 sub renderQTDebug(x as integer, y as integer, qt as QuadTree ptr)
     dim as integer wdth = 31
-    dim as integer hght = 8
+    dim as integer hght = 9
     line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BACKGROUNDCOLOR,bf
     line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BORDERCOLOR,b
     x+=BB/2
     y+=BB/2
-    draw string(x, y), "Count: " & qt->totalCount("root"), TEXTCOLOR:y+=CS
-    echo()
+    draw string(x, y), "Count(total): " & qt->totalCount(), TEXTCOLOR:y+=CS
+    draw string(x, y), "Count(local): " & qt->count, TEXTCOLOR:y+=CS
     draw string(x, y), "Depth: " & qt->depth, TEXTCOLOR:y+=CS
     draw string(x, y), "Boundary: " & qt->boundary.toString(), TEXTCOLOR:y+=CS
-    draw string(x, y), "Count: " & qt->count, TEXTCOLOR:y+=CS
+    draw string(x, y), "parent: " & qt->parent, TEXTCOLOR:y+=CS
     draw string(x, y), "ne: " & qt->ne, TEXTCOLOR:y+=CS
     draw string(x, y), "nw: " & qt->nw, TEXTCOLOR:y+=CS
     draw string(x, y), "se: " & qt->se, TEXTCOLOR:y+=CS
@@ -102,12 +104,14 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as QuadTree qt = QuadTree(Rect(0, 0, QT_SIZE, QT_SIZE), QT_CAP, 0)
     dim as QuadTree ptr qt_dbg = @qt
     dim as integer globalCount = 0
+    dim as integer oldWheel
+    dim as integer zoom = 1
     
     dim as StopWatch w_loop
     dim as StopWatch w_insert
     dim as StopWatch w_qtRender
     
-    dim as Mouse ms
+    dim as Mouse ms_new, ms
     dim as EVENT e
     dim as boolean runApp = true
     
@@ -118,7 +122,12 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         w_loop.start()
         
         ' ===== Updates =====
-        ms.update()
+        if(ms_new.state = 0) then
+            ms = ms_new
+            'zoom+=ms.dWheel
+        end if
+        ms_new.update()
+        
         
         ' ===== Events ======
         if(screenEvent(@e)) then
@@ -137,15 +146,15 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                 ' ===== R =====
                 if(e.scancode = SC_R) then qt_dbg = @qt
                 
-                ' ===== 1 - 4 - Step into children, D - divide =====
+                ' ===== 1 - 4 - Step into children =====
                 if(qt_dbg->divided) then
                     if(e.scancode = SC_1) then qt_dbg = qt_dbg->nw
                     if(e.scancode = SC_2) then qt_dbg = qt_dbg->ne
                     if(e.scancode = SC_3) then qt_dbg = qt_dbg->sw
                     if(e.scancode = SC_4) then qt_dbg = qt_dbg->se
-                else
-                    'if(e.scancode = SC_D) then qt_dbg->subDivide()
                 end if
+                
+                if(e.scancode = SC_BACKSPACE AND qt_dbg->parent <> 0) then qt_dbg = qt_dbg->parent
                 
                 ' ===== S - Spam dots in corner =====
                 if(e.scancode = SC_S) then globalCount+=spamDots(@qt, 10)
@@ -168,6 +177,10 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                     if(qt.insert(p)) then globalCount+=1
                     w_insert.stop()
                 end if
+            
+            case EVENT_MOUSE_WHEEL
+                zoom += e.z-oldWheel
+                oldWheel = e.z
             end select
         end if
         
@@ -183,17 +196,20 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         clearScreen(800, 600, CLEARCOLOR)
         
         w_qtRender.start()
-        renderQuadTree(@qt, false)
+        renderQuadTree(@qt, zoom, false)
         w_qtRender.stop()
         
-        renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
+        renderRect(@qt_dbg->boundary, zoom, rgb(82, 216, 136))
         renderQTDebug(300, 15, qt_dbg)
-        renderMouseDebug(300, 90, @ms)
+        renderMouseDebug(300, 200, @ms)
         draw string(10, 300), "w_loop: " & w_loop.get()
         draw string(10, 308), "w_insert: " & w_insert.get()
         draw string(10, 316), "w_qtRender: " & w_qtRender.get()
+        draw string(10, 324), "zoom: " & zoom
+        draw string(10, 332), "wheel: " & e.z
+        draw string(10, 340), "oldWheel: " & oldWheel
         screenUnlock()
-        sleep()
+        'sleep()
         w_loop.stop()
         sleep(1, 1)
     wend

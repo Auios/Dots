@@ -7,14 +7,14 @@ type Rect
     as Pnt size
     
     declare constructor()
-    declare constructor(x as integer, y as integer, w as integer, h as integer)
+    declare constructor(x as single, y as single, w as single, h as single)
     declare function get_nw() as Rect
     declare function get_ne() as Rect
     declare function get_sw() as Rect
     declare function get_se() as Rect
-    declare sub set(x as integer, y as integer, w as integer, h as integer)
-    declare sub offSet(x as integer, y as integer)
-    declare sub setSize(w as integer, h as integer, center as boolean = false)
+    declare sub set(x as single, y as single, w as single, h as single)
+    declare sub offSet(x as single, y as single)
+    declare sub setSize(w as single, h as single, center as boolean = false)
     declare function intersects(r as Rect ptr) as boolean
     declare function contains(p as Pnt ptr) as boolean
     declare function toString() as string
@@ -23,7 +23,7 @@ end type
 constructor Rect()
 end constructor
 
-constructor Rect(x as integer, y as integer, w as integer, h as integer)
+constructor Rect(x as single, y as single, w as single, h as single)
     this.set(x, y, w, h)
 end constructor
 
@@ -43,16 +43,16 @@ function Rect.get_se() as Rect
     return Rect(this.position.x + this.size.x/2, this.position.y + this.size.y/2, this.size.x/2, this.size.y/2)
 end function
 
-sub Rect.set(x as integer, y as integer, w as integer, h as integer)
+sub Rect.set(x as single, y as single, w as single, h as single)
     this.position.set(x, y)
     this.size.set(w, h)
 end sub
 
-sub Rect.offSet(x as integer, y as integer)
+sub Rect.offSet(x as single, y as single)
     this.position.offSet(x, y)
 end sub
 
-sub Rect.setSize(w as integer, h as integer, center as boolean = false)
+sub Rect.setSize(w as single, h as single, center as boolean = false)
     if(center) then
         
     else
