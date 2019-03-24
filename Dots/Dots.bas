@@ -8,8 +8,8 @@
 #include "quadtree.bi"
 #include "dot.bi"
 
-#define QT_SIZE 200
-#define QT_CAP 5
+#define QT_SIZE 256
+#define QT_CAP 4
 
 #define BB 8 'Border buffer
 #define CS 8 'Char size
@@ -59,8 +59,8 @@ sub renderQTDebug(x as integer, y as integer, qt as QuadTree ptr)
     dim as integer hght = 9
     line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BACKGROUNDCOLOR,bf
     line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BORDERCOLOR,b
-    x+=BB/2
-    y+=BB/2
+    x+=BB\2
+    y+=BB\2
     draw string(x, y), "Count(total): " & qt->totalCount(), TEXTCOLOR:y+=CS
     draw string(x, y), "Count(local): " & qt->count, TEXTCOLOR:y+=CS
     draw string(x, y), "Depth: " & qt->depth, TEXTCOLOR:y+=CS
@@ -77,8 +77,8 @@ sub renderMouseDebug(x as integer, y as integer, ms as Mouse ptr)
     dim as integer hght = 5
     line(x,y)-(x+wdth*CS+bb, y+hght*CS+bb),BACKGROUNDCOLOR,bf
     line(x,y)-(x+wdth*CS+bb, y+hght*CS+bb),BORDERCOLOR,b
-    x+=bb/2
-    y+=bb/2
+    x+=bb\2
+    y+=bb\2
     draw string(x, y), "State: " & ms->state, TEXTCOLOR:y+=8
     draw string(x, y), "Buttons: " & ms->buttons, TEXTCOLOR:y+=8
     draw string(x, y), "Wheel: " & ms->wheel, TEXTCOLOR:y+=8
@@ -115,7 +115,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as EVENT e
     dim as boolean runApp = true
     
-    'globalCount+=spamDots(@qt, 100)
+    'globalCount+=spamDots(@qt, 1000000, 0, 0, QT_SIZE\2, QT_SIZE\2)
     
     ' ===== Main loop =====
     while(runApp)
@@ -155,11 +155,17 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                 
                 if(e.scancode = SC_BACKSPACE AND qt_dbg->parent <> 0) then qt_dbg = qt_dbg->parent
                 
-                ' ===== S - Spam dots in corner =====
-                if(e.scancode = SC_S) then globalCount+=spamDots(@qt, 100)
+                ' ===== A - Spam dot in corner =====
+                if(e.scancode = SC_A) then globalCount+=spamDots(@qt, 1)
                 
-                ' ===== D - Spam dots randomly=====
-                if(e.scancode = SC_D) then globalCount+=spamDots(@qt, 250, 0, 0, 200, 200)
+                ' ===== S - Spam dots in corner =====
+                if(e.scancode = SC_S) then globalCount+=spamDots(@qt, 10)
+                
+                ' ===== D - Spam dots in corner =====
+                if(e.scancode = SC_D) then globalCount+=spamDots(@qt, 100)
+                
+                ' ===== Q - Spam dots randomly=====
+                if(e.scancode = SC_Q) then globalCount+=spamDots(@qt, 250, 0, 0, QT_SIZE, QT_SIZE)
                 
                 ' ===== C - Clear =====
                 if(e.scancode = SC_C) then
