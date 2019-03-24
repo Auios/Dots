@@ -1,3 +1,3 @@
 @echo on
-fbc dots.bas -g -showincludes -profile -v -e -x DotsProject_Debug.exe
+fbc dots.bas -gen gcc -g -showincludes -profile -v -e -x DotsProject_Debug.exe
 pause

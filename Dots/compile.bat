@@ -1,3 +1,3 @@
 @echo off
-fbc dots.bas -x DotsProject.exe
+fbc dots.bas -gen gcc -x DotsProject.exe
 pause
