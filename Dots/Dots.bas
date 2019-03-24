@@ -1,3 +1,5 @@
+#define fbc -gen gcc -O 3
+
 #include "fbgfx.bi"
 #include "pnt.bi"
 #include "rect.bi"
@@ -102,6 +104,7 @@ end function
 
 function main(argc as integer, argv as zstring ptr ptr) as integer
     screenRes(800, 600, 32, 1, 0)
+    dim as any ptr scrnBuff = screenPtr()
     
     dim as QuadTree qt = QuadTree(Rect(0, 0, QT_SIZE, QT_SIZE), QT_CAP, 0)
     dim as QuadTree ptr qt_dbg = @qt
@@ -196,7 +199,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         clearScreen(800, 600, CLEARCOLOR)
         
         w_qtRender.start()
-        renderQuadTree(@qt, zoom, false)
+        renderQuadTree(@qt, zoom, true)
         w_qtRender.stop()
         
         renderRect(@qt_dbg->boundary, zoom, rgb(82, 216, 136))
