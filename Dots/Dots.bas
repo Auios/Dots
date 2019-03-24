@@ -9,7 +9,7 @@
 #include "dot.bi"
 
 #define QT_SIZE 200
-#define QT_CAP 1
+#define QT_CAP 5
 
 #define BB 8 'Border buffer
 #define CS 8 'Char size
@@ -115,7 +115,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as EVENT e
     dim as boolean runApp = true
     
-    globalCount+=spamDots(@qt, 10)
+    'globalCount+=spamDots(@qt, 100)
     
     ' ===== Main loop =====
     while(runApp)
@@ -127,7 +127,6 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             'zoom+=ms.dWheel
         end if
         ms_new.update()
-        
         
         ' ===== Events ======
         if(screenEvent(@e)) then
@@ -157,7 +156,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                 if(e.scancode = SC_BACKSPACE AND qt_dbg->parent <> 0) then qt_dbg = qt_dbg->parent
                 
                 ' ===== S - Spam dots in corner =====
-                if(e.scancode = SC_S) then globalCount+=spamDots(@qt, 10)
+                if(e.scancode = SC_S) then globalCount+=spamDots(@qt, 100)
                 
                 ' ===== D - Spam dots randomly=====
                 if(e.scancode = SC_D) then globalCount+=spamDots(@qt, 250, 0, 0, 200, 200)
@@ -209,7 +208,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         draw string(10, 332), "wheel: " & e.z
         draw string(10, 340), "oldWheel: " & oldWheel
         screenUnlock()
-        'sleep()
+        
         w_loop.stop()
         sleep(1, 1)
     wend
