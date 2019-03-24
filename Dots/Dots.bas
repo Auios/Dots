@@ -9,7 +9,7 @@
 #include "dot.bi"
 
 #define QT_SIZE 256
-#define QT_CAP 4
+#define QT_CAP 8
 
 #define BB 8 'Border buffer
 #define CS 8 'Char size
@@ -136,12 +136,6 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                 ' ===== ESCAPE - close application =====
                 if(e.scancode = SC_ESCAPE) then runApp = false
                 
-                ' ===== A - Add single random dot =====
-                if(e.scancode = SC_A) then
-                    dim as Pnt p = Pnt(200*rnd(), 200*rnd())
-                    if(qt.insert(p)) then globalCount+=1
-                end if
-                
                 ' ===== R =====
                 if(e.scancode = SC_R) then qt_dbg = @qt
                 
@@ -165,7 +159,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                 if(e.scancode = SC_D) then globalCount+=spamDots(@qt, 100)
                 
                 ' ===== Q - Spam dots randomly=====
-                if(e.scancode = SC_Q) then globalCount+=spamDots(@qt, 250, 0, 0, QT_SIZE, QT_SIZE)
+                if(e.scancode = SC_Q) then globalCount+=spamDots(@qt, 1000, 0, 0, QT_SIZE, QT_SIZE)
                 
                 ' ===== C - Clear =====
                 if(e.scancode = SC_C) then
@@ -177,9 +171,8 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             case EVENT_MOUSE_BUTTON_PRESS
                 ' ===== Left button - Add dot where mouse is =====
                 if(e.button = BUTTON_LEFT) then
-                    dim as Pnt p = Pnt(ms.x, ms.y)
                     w_insert.start()
-                    if(qt.insert(p)) then globalCount+=1
+                    if(qt.insert(Pnt(ms.x / zoom, ms.y / zoom))) then globalCount+=1
                     w_insert.stop()
                 end if
             
@@ -207,6 +200,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         renderRect(@qt_dbg->boundary, zoom, rgb(82, 216, 136))
         renderQTDebug(300, 15, qt_dbg)
         renderMouseDebug(300, 200, @ms)
+        draw string(10, 292), "globalCount: " & globalCount
         draw string(10, 300), "w_loop: " & w_loop.get()
         draw string(10, 308), "w_insert: " & w_insert.get()
         draw string(10, 316), "w_qtRender: " & w_qtRender.get()
