@@ -14,6 +14,7 @@ type Rect
     declare function get_se() as Rect
     declare sub set(x as integer, y as integer, w as integer, h as integer)
     declare sub offSet(x as integer, y as integer)
+    declare sub setSize(w as integer, h as integer, center as boolean = false)
     declare function intersects(r as Rect ptr) as boolean
     declare function contains(p as Pnt ptr) as boolean
     declare function toString() as string
@@ -49,6 +50,14 @@ end sub
 
 sub Rect.offSet(x as integer, y as integer)
     this.position.offSet(x, y)
+end sub
+
+sub Rect.setSize(w as integer, h as integer, center as boolean = false)
+    if(center) then
+        
+    else
+        this.size = Pnt(w,h)
+    end if
 end sub
 
 function Rect.intersects(r as Rect ptr) as boolean
