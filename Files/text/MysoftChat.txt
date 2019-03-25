@@ -1,252 +1,3 @@
-[19:21] <qwebirc23602> why
-[19:21] <+Mysoft> because the override would expect to be the same prototype
-[19:21] <qwebirc23602> ah
-[19:21] <+Mysoft> so in some cases it may work
-[19:21] <+Mysoft> if you implement your own fbgfx_line( ... )
-[19:21] <+Mysoft> but it might have hidden issues
-[19:21] <+Mysoft> if say multiple modules are used
-[19:21] <qwebirc23602> like what
-[19:22] <qwebirc23602> modules?
-[19:22] <+Mysoft> as you will need the override on each module
-[19:22] <qwebirc23602> are modules a FB thing?
-[19:22] <+Mysoft> yeah you know
-[19:22] <+Mysoft> yes
-[19:22] <+Mysoft> most of the time you dont need modules
-[19:22] <+Mysoft> as that just reduce optimization
-[19:22] <qwebirc23602> never heard of modules before
-[19:22] <+Mysoft> well
-[19:22] <+Mysoft> in you see lot of projects
-[19:22] <+Mysoft> with a bunch of .c files
-[19:22] <+Mysoft> right?
-[19:22] <+Mysoft> each of them is compiled separately
-[19:22] <+Mysoft> those are modules
-[19:22] <qwebirc23602> Oh
-[19:22] <qwebirc23602> oh okay
-[19:23] <+Mysoft> so the override i did
-[19:23] <+Mysoft> would require the override code to exist on all modules
-[19:23] <+Mysoft> for it to work :)
-[19:23] <+Mysoft> but yes
-[19:23] <+Mysoft> i didnt tested to be sure of possible consequences
-[19:23] <+Mysoft> but i think at least with gen gcc
-[19:23] <+Mysoft> it will work very well
-[19:23] <+Mysoft> if you implement your own line
-[19:24] <+Mysoft> with less checks
-[19:24] <qwebirc23602> well I dont think I need /that/ much optimization
-[19:24] <+Mysoft> to speed up fbgfx line :)
-[19:24] <qwebirc23602> Im sure ill be moving to opengl later
-[19:24] <qwebirc23602> Right now im using FB's graphics as a place holder
-[19:24] <+Mysoft> i see
-[19:24] <+Mysoft> well OpenGL may not speed it up
-[19:24] <+Mysoft> that much
-[19:24] <qwebirc23602> id be using the GPU at least
-[19:24] <qwebirc23602> instead of the CPU
-[19:25] <+Mysoft> yeah but that does not guarante speed up
-[19:25] <+Mysoft> for 2D quads like that
-[19:25] <qwebirc23602> also shaders
-[19:25] <+Mysoft> so when you do
-[19:25] <qwebirc23602> will make things look nice and pretty
-[19:25] <+Mysoft> you will need to NOT do immediate render
-[19:25] <+Mysoft> but use vertex lists
-[19:25] <+Mysoft> otherwise the overread of drawing the quads
-[19:26] <+Mysoft> would be more than the overhead of freebasic line
-[19:26] <+Mysoft> that is what makes your code slower :P
-[19:26] <qwebirc23602> yeah Id have a render limit
-[19:26] <qwebirc23602> like 30 or 40 frames per second max
-[19:26] <+Mysoft> i will test a override for line
-[19:26] <+Mysoft> you are just writing boxes, right?
-[19:26] <qwebirc23602> and circles
-[19:26] <qwebirc23602> but yeah for the quad
-[19:26] <qwebirc23602> boxes
-[19:27] <qwebirc23602> the troops will be replaced with sprites later
-[19:27] <+Mysoft> troops are circles?
-[19:27] <qwebirc23602> circles for now for the troops
-[19:27] <+Mysoft> ok
-[19:27] <qwebirc23602> until i make a sprite struct and frame functions
-[19:27] <+Mysoft> well try to compile with -gen gcc there
-[19:27] <+Mysoft> to see if all goes right for you
-[19:27] <+Mysoft> then we replace the quad drawing
-[19:27] <+Mysoft> with a custom function
-[19:27] <qwebirc23602> yeah
-[19:28] <+Mysoft> not necessarily overriding freebasic
-[19:28] <+Mysoft> just to test the speed up
-[19:28] <qwebirc23602> well didnt you already do the macro?
-[19:28] <+Mysoft> yeah but
-[19:28] <+Mysoft> i would need to check the full prototype for freebasic line
-[19:28] <+Mysoft> so its more stuff to implement other than a simple
-[19:28] <+Mysoft> DrawQuad( x , y , sx , sy )
-[19:29] <+Mysoft> and since you ALREADY have a function
-[19:29] <+Mysoft> we just draw it using pointers inside your function
-[19:29] <+Mysoft> :P
-[19:29] <qwebirc23602> Alright
-[19:30] <+Mysoft> do you really need
-[19:30] <+Mysoft> single for the zoom?
-[19:30] <qwebirc23602> I dont know
-[19:30] <qwebirc23602> I dont think I do if I rescale my world environment
-[19:31] <+Mysoft> imo it should just be a scaled integer
-[19:31] <+Mysoft> instead of single
-[19:31] <+Mysoft> like 1 = 256
-[19:31] <qwebirc23602> Okay
-[19:31] <+Mysoft> that would optimize much better with -gen gcc
-[19:31] <+Mysoft> than using single
-[19:31] <+Mysoft> and since you are calling that
-[19:31] <+Mysoft> several times...
-[19:31] <+Mysoft> it will totally become the bottleneck
-[19:31] <+Mysoft> once we remove the "line" bottleneck
-[19:31] <qwebirc23602> I have a lot of stuff to rewrite
-[19:31] <qwebirc23602> phew
-[19:32] <qwebirc23602> I use several files Mysoft
-[19:32] <qwebirc23602> do you think thats okay
-[19:32] <qwebirc23602> like
-[19:32] <qwebirc23602> I have
-[19:32] <qwebirc23602> rect.bi
-[19:32] <qwebirc23602> and I put my struct in there
-[19:32] <+Mysoft> yes
-[19:32] <qwebirc23602> along with all functions that are used by struct
-[19:32] <+Mysoft> you #include them
-[19:32] <+Mysoft> waht?
-[19:32] <+Mysoft> dont put code on .bi
-[19:32] <qwebirc23602> well in C/C++
-[19:32] <qwebirc23602> I know
-[19:32] <qwebirc23602> listen though
-[19:32] <qwebirc23602> in C/C++
-[19:32] <qwebirc23602> I can just
-[19:32] <qwebirc23602> GCC *.cpp
-[19:32] <+Mysoft> yes
-[19:32] <qwebirc23602> and get my a.out
-[19:32] <+Mysoft> in freebasic you can as well
-[19:32] <qwebirc23602> I tried that in FB
-[19:32] <qwebirc23602> fbc *.bas
-[19:33] <qwebirc23602> didnt work well
-[19:33] <qwebirc23602> how does it know where the main entry point is anyway
-[19:33] <+Mysoft> you pass -m
-[19:33] <qwebirc23602> -m?
-[19:33] <qwebirc23602> ah
-[19:33] <qwebirc23602> so
-[19:33] <+Mysoft> fbc *.bas -m MainFile
-[19:33] <qwebirc23602> fbc *.bas -m main.bas
-[19:33] <+Mysoft> gcc is no different on that
-[19:33] <qwebirc23602> yeah?
-[19:34] <+Mysoft> but maybe gcc tried to auto guess
-[19:34] <qwebirc23602> well now I have more work to do I guess
-[19:34] <+Mysoft> because of the "main" function
-[19:34] <+Mysoft> but anyway
-[19:34] <qwebirc23602> I didnt know about that in gcc
-[19:34] <+Mysoft> you should avoid
-[19:34] <+Mysoft> using that if you can
-[19:34] <+Mysoft> the
-[19:34] <qwebirc23602> why
-[19:34] <+Mysoft> fbc *.bas
-[19:34] <qwebirc23602> why should I
-[19:34] <+Mysoft> because they will slowdown compilation
-[19:34] <+Mysoft> just
-[19:34] <+Mysoft> #include "file.bas"
-[19:34] <+Mysoft> inside your main file
-[19:34] <+Mysoft> and compile that
-[19:35] <+Mysoft> like you are already doing
-[19:35] <+Mysoft> except
-[19:35] <+Mysoft> keep code on .bas
-[19:35] <+Mysoft> not on .bi
-[19:35] <qwebirc23602> I used to do that but then someone called me a homosexual for doing that
-[19:35] <+Mysoft> yes other people are retarded
-[19:35] <qwebirc23602> I was told to only do #include .bi files
-[19:35] <+Mysoft> contrary to popular belief
-[19:35] <+Mysoft> doing that does not help
-[19:35] <+Mysoft> until your project becomes big
-[19:36] <qwebirc23602> #including .bas?
-[19:36] <+Mysoft> like >50k lines
-[19:36] <+Mysoft> using modules... does not help
-[19:36] <+Mysoft> ´
-[19:36] <qwebirc23602> do are you saying use a single file
-[19:36] <+Mysoft> yes
-[19:36] <+Mysoft> use a single file
-[19:36] <+Mysoft> with #include
-[19:36] <+Mysoft> that will have two benefits
-[19:36] <+Mysoft> one...
-[19:37] <+Mysoft> the .bi you include
-[19:37] <+Mysoft> will just be processed ONCE
-[19:37] <qwebirc23602> but ill have one massive file
-[19:37] <qwebirc23602> I wont be able to navigate it well
-[19:37] <+Mysoft> i didnt said to do one massive file
-[19:37] <+Mysoft> :P
-[19:37] <+Mysoft> i said to have several files
-[19:37] <qwebirc23602> oh
-[19:37] <+Mysoft> #include'd
-[19:37] <+Mysoft> on the main file
-[19:37] <qwebirc23602> Okay I have several files right now
-[19:37] <qwebirc23602> but theyre all .bi
-[19:37] <+Mysoft> yes
-[19:37] <+Mysoft> just make them .bas
-[19:37] <+Mysoft> and if you will have .bi
-[19:37] <+Mysoft> make them .bi
-[19:38] <qwebirc23602> shouldnt I keep my structs in the .bi
-[19:38] <+Mysoft> and include on the .bas
-[19:38] <+Mysoft> yup
-[19:38] <qwebirc23602> ok
-[19:38] <+Mysoft> it can be :)
-[19:38] <+Mysoft> just dont keep code on .bi
-[19:38] <qwebirc23602> yeah
-[19:38] <+Mysoft> because .bi are headers
-[19:38] <+Mysoft> even that in practice it does not make difference
-[19:38] <+Mysoft> it can be horrendous :P
-[19:38] <+Mysoft> also use
-[19:39] <+Mysoft> #include once ""
-[19:39] <qwebirc23602> I use #pragma once
-[19:39] <qwebirc23602> in my headers
-[19:39] <+Mysoft> ok
-[19:39] <+Mysoft> then you can #include the ".bi"
-[19:39] <+Mysoft> on all .bas
-[19:39] <+Mysoft> just like if you had modules
-[19:39] <+Mysoft> and then just #include them all on the main module
-[19:39] <+Mysoft> that way
-[19:39] <+Mysoft> its VERY easy
-[19:39] <qwebirc23602> so
-[19:39] <+Mysoft> when you decide to change from single module
-[19:39] <+Mysoft> to multiple modules
-[19:39] <qwebirc23602> just have a file dedicated to including everything?
-[19:40] <+Mysoft> yeah
-[19:40] <+Mysoft> so you basically do everything as if it would be multiple modules
-[19:40] <+Mysoft> but compile as if it was a single module
-[19:40] <+Mysoft> that will add some speed benefits when compiling
-[19:40] <+Mysoft> because stuff wont be analized multiple times
-[19:40] <+Mysoft> AND
-[19:41] <+Mysoft> it add some speed benefits
-[19:41] <+Mysoft> because C will now know how stuff is used
-[19:41] <+Mysoft> for example...
-[19:41] <+Mysoft> say you had a module
-[19:41] <+Mysoft> with just that function to draw a line
-[19:41] <+Mysoft> that will cause C to not be able to inline it
-[19:41] <+Mysoft> because the function definition is not on the same module
-[19:41] <+Mysoft> that its being used
-[19:42] <+Mysoft> also if you had a function that were using floats
-[19:42] <+Mysoft> i.e. single
-[19:42] <+Mysoft> and its one of the patterns that C understand
-[19:42] <+Mysoft> and optimize using integers
-[19:42] <+Mysoft> you will lose that optimization as well
-[19:42] <+Mysoft> because again...
-[19:42] <+Mysoft> the module that defined that
-[19:42] <+Mysoft> is unknown to the compiler
-[19:42] <+Mysoft> and a BUNCH OF STUFF LIKE THAT
-[19:43] <+Mysoft> so using modules... helps for huge projects
-[19:43] <qwebirc23602> so using modules would be me compiling with -m
-[19:43] <+Mysoft> yeah
-[19:43] <qwebirc23602> me not using modules would be me having a file dedicated to including everything
-[19:43] <+Mysoft> the *.bas -m
-[19:43] <+Mysoft> yep
-[19:43] <qwebirc23602> ok
-[19:43] <qwebirc23602> ill do that then
-[19:43] <qwebirc23602> what should i name it
-[19:43] <qwebirc23602> the file
-[19:43] <qwebirc23602> which includes
-[19:43] <+Mysoft> well
-[19:43] <+Mysoft> main.bas ?
-[19:43] <+Mysoft> :)
-[19:43] <qwebirc23602> oh
-[19:43] <qwebirc23602> i se
-[19:43] <qwebirc23602> I see*
-[19:44] <qwebirc23602> thats not what I had in mind but now I understand
-[19:44] <qwebirc23602> II thought you meant
-[19:44] <qwebirc23602> in my main.bas file
-[19:44] <qwebirc23602> #include "includer.bi"
 [19:44] <+Mysoft> well it would work as well
 [19:44] <+Mysoft> but i think having a main file dedicated
 [19:45] <+Mysoft> works very nicely
@@ -997,3 +748,241 @@
 [21:11] <+Mysoft> anyway talked too much xD
 [21:21] <qwebirc23602> All good information
 [21:31] == Thedarkb-X40 [~beno@51-171-49-156-dynamic.agg3.kny.prp-wtd.eircom.net] has joined ##freebasic
+[21:49] == Mysoft [~user@unaffiliated/mysoft]
+[21:49] ==  realname : Limp Bizkit User
+[21:49] ==  channels : +##freebasic
+[21:49] ==  server   : weber.freenode.net [US]
+[21:49] ==  account  : Mysoft
+[21:49] == End of WHOIS
+[21:55] <qwebirc23602> is it ok to use ubyte as my boolean replacement
+[21:55] <qwebirc23602> or should i be sticking with integers
+[21:55] <qwebirc23602> I have a stopwatch struct
+[21:56] <qwebirc23602> Im using a ubyte as a flag to see if its running or not
+[21:56] <qwebirc23602> also my rect struct returns a ubyte if it overlaps with another rect
+[21:59] <+Mysoft> its ok to use ubyte as boolean
+[21:59] <+Mysoft> in fact C uses integer
+[21:59] <+Mysoft> but winapi uses BYTE
+[21:59] <+Mysoft> (that is ubyte)
+[21:59] <qwebirc23602> what do you suggest I use
+[21:59] <+Mysoft> well
+[21:59] <+Mysoft> maybe you can just use boolean
+[21:59] <+Mysoft> but
+[21:59] <+Mysoft> #undef boolean
+[22:00] <+Mysoft> #define boolean ubyte
+[22:00] <+Mysoft> :)
+[22:00] <+Mysoft> now you have boolean
+[22:00] <+Mysoft> but without requiring fb 1.0.3
+[22:00] <+Mysoft> hehe
+[22:00] <+Mysoft> i normally recommend to do that
+[22:00] <+Mysoft> but ok
+[22:00] <+Mysoft> as for the size
+[22:00] <+Mysoft> for return of function
+[22:00] <+Mysoft> it does not matter
+[22:00] <+Mysoft> because the return of functions is returned on EAX
+[22:01] <+Mysoft> that is 32bit
+[22:01] <+Mysoft> so even if you use a byte
+[22:01] <+Mysoft> it will still be on the 32bit register
+[22:01] <+Mysoft> however if you will have it on a struct
+[22:01] <+Mysoft> and its not a single bit on a bitfield
+[22:01] <+Mysoft> then... probabily ubyte would be recommended to save space
+[22:01] <+Mysoft> BUT
+[22:01] <+Mysoft> this only makes sense if you align the stuff on the struct properly
+[22:02] <qwebirc23602> Im looking for speed optimization
+[22:02] <qwebirc23602> not memory
+[22:02] <qwebirc23602> memory is plenty
+[22:02] <+Mysoft> well memory optimization
+[22:02] <+Mysoft> also means speed optimization
+[22:02] <+Mysoft> in many cases
+[22:02] <+Mysoft> because you have less to compute
+[22:03] <+Mysoft> so it caches better
+[22:03] <+Mysoft> just like the 8bpp vs 16bpp vs 32bpp screen
+[22:03] <qwebirc23602> yeah I know but Im just saying
+[22:03] <+Mysoft> you have not noticed the speed up
+[22:03] <+Mysoft> because you had lot of bottlenecks
+[22:03] <qwebirc23602> I guess
+[22:03] <+Mysoft> and circle/line you had
+[22:03] <+Mysoft> had a bottleneck that made the improvements for it being <bpp moot
+[22:03] <+Mysoft> :P
+[22:03] <+Mysoft> so anyway
+[22:03] <+Mysoft> as i said
+[22:03] <+Mysoft> on the struct
+[22:03] <+Mysoft> it would be optimal to have it stored as a single bit
+[22:04] <+Mysoft> then you get all the benefits of boolean
+[22:04] <+Mysoft> but otherwise
+[22:04] <+Mysoft> you wont have any speed difference
+[22:04] <+Mysoft> on byte vs integer
+[22:04] <qwebirc23602> Just in general coding practice tho
+[22:04] <qwebirc23602> byte vs integer
+[22:04] <+Mysoft> well
+[22:04] <+Mysoft> i normally use integer
+[22:04] <qwebirc23602> I know things use integer a lot more often
+[22:04] <+Mysoft> when returning from functions
+[22:05] <qwebirc23602> so it has to cast the byte to integer
+[22:05] <+Mysoft> yeah but that cast
+[22:05] <+Mysoft> is not really speed changing for example
+[22:05] <+Mysoft> integer to integer
+[22:05] <+Mysoft> it would use
+[22:05] <+Mysoft> mov eax, [MyInteger]
+[22:05] <+Mysoft> that takes 1 cycle + memory access
+[22:05] <+Mysoft> if it was byte
+[22:05] <+Mysoft> it would use
+[22:06] <+Mysoft> movzx eax, byte [MyInteger]
+[22:06] <+Mysoft> that takes 1 cycle + memory access
+[22:06] <+Mysoft> :P
+[22:06] <+Mysoft> err
+[22:06] <+Mysoft> MyByte
+[22:06] <+Mysoft> :)
+[22:06] <+Mysoft> and gen gcc would optimize it
+[22:06] <+Mysoft> to handle 1bit
+[22:06] <+Mysoft> if you keep it just 0 or 1
+[22:07] <+Mysoft> so as i said
+[22:07] <+Mysoft> for returning values keeping it as integer is fine
+[22:07] <+Mysoft> for structures if you have flags use bitfield with just 1 bit
+[22:07] <+Mysoft> otherwise use integer or byte
+[22:07] <+Mysoft> if its an array that may end wasting space
+[22:07] <+Mysoft> you can use byte
+[22:08] <+Mysoft> as long you have other stuff that fit on byte's on the structure
+[22:08] <+Mysoft> otherwise alignment will make the byte useless :P
+[22:21] <qwebirc23602> did you say anything about doing stuff like
+[22:21] <qwebirc23602> if(NOT flag) then
+[22:21] <qwebirc23602> vs
+[22:22] <qwebirc23602> if(flag <> 0)
+[22:22] <qwebirc23602> Mysoft
+[22:26] <+Mysoft> well
+[22:26] <+Mysoft> <>0 is not necessary
+[22:26] <+Mysoft> you can just do
+[22:26] <+Mysoft> if flag then...
+[22:26] <+Mysoft> but maybe you mean
+[22:26] <qwebirc23602> but the way I wrote it
+[22:26] <+Mysoft> if (NOT flag)
+[22:26] <+Mysoft> vs
+[22:26] <+Mysoft> if (flag=0)
+[22:26] <+Mysoft> :P
+[22:26] <qwebirc23602> oh
+[22:26] <qwebirc23602> yeah that too
+[22:26] <qwebirc23602> haha
+[22:26] <+Mysoft> i would say to not use NOT
+[22:26] <+Mysoft> :P
+[22:27] <+Mysoft> because NOT is bitwise NOT...
+[22:27] <qwebirc23602> not not not not
+[22:27] <+Mysoft> not logical NOT
+[22:27] <+Mysoft> :P
+[22:27] <+Mysoft> so
+[22:27] <+Mysoft> NOT -1 = 0
+[22:27] <+Mysoft> but
+[22:27] <+Mysoft> NOT 1 = -2
+[22:27] <+Mysoft> and both 1 and -2 are TRUE
+[22:27] <+Mysoft> since TRUE is anything but 0
+[22:28] <+Mysoft> freebasic "boolean type"
+[22:28] <+Mysoft> would make that work
+[22:28] <+Mysoft> even with NOT
+[22:28] <+Mysoft> but it adds an overhead
+[22:28] <+Mysoft> of compare
+[22:28] <+Mysoft> everytime you change it
+[22:28] <+Mysoft> so
+[22:29] <+Mysoft> IsNot(flag)
+[22:29] <+Mysoft> :P
+[22:29] <+Mysoft> would be wise... to avoid such stuff
+[22:29] <+Mysoft> so then you can have the #define
+[22:29] <+Mysoft> doing it properly
+[22:29] <+Mysoft> but at your control
+[22:29] <+Mysoft> #define IsNot( _F ) ((_F)=0)
+[22:33] <qwebirc23602> Nice
+[22:33] <qwebirc23602> I like these pre-processor things
+[22:33] <+Mysoft> so as i said
+[22:33] <+Mysoft> having the boolean type in practice is ok
+[22:33] <+Mysoft> in theory its ok
+[22:33] <qwebirc23602> #define BOOLEAN UBYTE
+[22:33] <qwebirc23602> #define TRUE 1
+[22:33] <qwebirc23602> #define FALSE 0
+[22:33] <qwebirc23602> :)
+[22:33] <+Mysoft> yeah
+[22:33] <qwebirc23602> #define isFalse( _F ) ((_F)=FALSE)
+[22:34] <+Mysoft> in FB true is actually -1
+[22:34] <+Mysoft> but anyway
+[22:34] <+Mysoft> just please
+[22:34] <+Mysoft> never do
+[22:34] <+Mysoft> if MyBoolean = TRUE
+[22:34] <+Mysoft> :P
+[22:34] <qwebirc23602> oh
+[22:34] <qwebirc23602> yeah
+[22:34] <qwebirc23602> I never do that
+[22:34] <qwebirc23602> thats a rookie move
+[22:34] <+Mysoft> yeah
+[22:34] <+Mysoft> specially since you already have the
+[22:34] <+Mysoft> if MyBoolean then
+[22:35] <qwebirc23602> yeah that frustrates me when I see other people's code and it has that
+[22:35] <+Mysoft> and yes i like the IsNot()
+[22:35] <+Mysoft> because its the complement that missing on freebasic
+[22:35] <+Mysoft> for example
+[22:35] <+Mysoft> and -> andalso
+[22:35] <+Mysoft> or -> orelse
+[22:35] <+Mysoft> but freebasic does not have the
+[22:35] <+Mysoft> not -> IsNot
+[22:36] <+Mysoft> they should had added that... not the "boolean" type
+[22:36] <+Mysoft> and worse
+[22:36] <+Mysoft> they added too late
+[22:36] <+Mysoft> on version 1.0.3
+[22:36] <qwebirc23602> what does andalso do
+[22:36] <qwebirc23602> and orelse
+[22:36] <+Mysoft> & = and
+[22:36] <+Mysoft> | = or
+[22:36] <+Mysoft> && = andalso
+[22:36] <+Mysoft> || = orelse
+[22:37] <qwebirc23602> ....So ive been using bitwise operations my entire freebasic career too??
+[22:37] <qwebirc23602> sheesh
+[22:37] <+Mysoft> yes :P
+[22:37] <+Mysoft> well
+[22:37] <+Mysoft> sometimes using them are faster
+[22:37] <+Mysoft> because the || requires logic decisions
+[22:37] <+Mysoft> so doing
+[22:37] <+Mysoft> if A=0 and B = 0
+[22:37] <+Mysoft> is usually faster than
+[22:38] <+Mysoft> if A=0 andalso B=0
+[22:38] <+Mysoft> altough
+[22:38] <+Mysoft> if (A or B)=0 then
+[22:38] <+Mysoft> is even faster :P
+[22:38] <+Mysoft> but anyway
+[22:38] <+Mysoft> HOWEVER if you have
+[22:39] <+Mysoft> if CanIProceed andalso ThisOtherSpecificFunctionCall() then ...
+[22:39] <+Mysoft> the ThisOtherSpecificFunctionCall() will never be called
+[22:39] <+Mysoft> in case CanIProceed is false
+[22:39] <+Mysoft> but
+[22:39] <+Mysoft> if CanIProceed and ThisOtherSpecificFunctionCall()
+[22:40] <+Mysoft> then it would always call
+[22:40] <+Mysoft> and get the result
+[22:40] <+Mysoft> and bitwise and
+[22:40] <+Mysoft> and then check
+[22:40] <+Mysoft> also since thats bitwise
+[22:40] <+Mysoft> it could have other problems as well
+[22:40] <+Mysoft> assume ThisOtherSpecificFunctionCall() returns 0 or 1
+[22:40] <+Mysoft> but CanIProceed
+[22:40] <+Mysoft> is 0 or 16
+[22:41] <+Mysoft> (1 and 16) = 0
+[22:41] <+Mysoft> so it would fail when both were "true"
+[22:41] <+Mysoft> so... andalso would have fixed that
+[22:41] <+Mysoft> or you would explicit do
+[22:41] <+Mysoft> if CanIProceed<>0 and FunctionCall()<>0 then ...
+[22:41] <+Mysoft> like it was on classic BASIC
+[22:41] <+Mysoft> :)
+[22:42] <+Mysoft> but yes
+[22:42] <+Mysoft> this can save your skin on stuff like
+[22:42] <+Mysoft> if MyPointer andalso *MyPointer=10 then ...
+[22:43] <+Mysoft> since the pointer will only be referenced in case MyPointer is not null
+[22:43] <+Mysoft> and again... AND would cause it to crash hehe
+[23:31] <qwebirc23602> Mysoft
+[23:31] <qwebirc23602> if youre interested to take a look at my work so far
+[23:31] <qwebirc23602> https://share.dmca.gripe/vn6IGbiQ4LkrjPz7.zip
+[23:41] <+Mysoft> i see
+[23:41] <+Mysoft> the dots you are drawing with pointers now
+[23:41] <+Mysoft> or still circles?
+[23:50] <qwebirc23602> I havent implemented the global array yet
+[23:50] <qwebirc23602> all the dots are stored in the QuadTree at the moment
+[23:50] <qwebirc23602> Oh
+[23:50] <qwebirc23602> Im still drawing them with circles at the moment
+[23:53] <qwebirc23602> 500,000 points rendering at 80ms
+[23:54] <qwebirc23602> Mysoft how can I make a proper zoom algorithm
+[23:54] <qwebirc23602> I dont like how it gets slower for me to zoom in as I get closer
+[23:54] <qwebirc23602> and as I zoom out farther it gets faster
+[23:54] <qwebirc23602> a nice constant speed would be great
+[23:55] <qwebirc23602> probably should be adding zoom instead of multiplying

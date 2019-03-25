@@ -24,23 +24,25 @@ sub qt_subDivide(qt as QuadTree ptr)
 end sub
 
 function qt_insert(qt as QuadTree ptr, qtn as QTnode) as boolean
-    dim as boolean result = false
     if(rectContains(@qt->boundary, @qtn.p)) then
         if(qt->count < qt->capacity) then
             qt->n[qt->count] = qtn
             qt->count+=1
-            result = true
+            return true
         else
             if(qt->boundary.size.x > 1) then
                 if(qt->divided = 0) then qt_subDivide(qt)
-                result = qt_insert(qt->nw, qtn) OR qt_insert(qt->ne, qtn) OR qt_insert(qt->sw, qtn) OR qt_insert(qt->se, qtn)
+                if(qt_insert(qt->nw, qtn)) then return true
+                if(qt_insert(qt->ne, qtn)) then return true
+                if(qt_insert(qt->sw, qtn)) then return true
+                if(qt_insert(qt->se, qtn)) then return true
             end if
         end if
     end if
-    return result
+    return false
 end function
 
-function qt_search(qt as QuadTree ptr, p as Pnt, nodes as QTnode ptr, count as integer ptr) as boolean
+function qt_search(qt as QuadTree ptr, p as Pnt, radius as integer, nodes as QTnode ptr, count as integer ptr) as boolean
     return false
 end function
 

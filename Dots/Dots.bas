@@ -91,9 +91,8 @@ end sub
 sub renderQTDebug(x as integer, y as integer, qt as QuadTree ptr)
     dim as integer wdth = 31
     dim as integer hght = 9
-    dim as integer CS_BB = CS + BB
-    line(x,y)-(x+wdth*CS_BB, y+hght*CS_BB),BACKGROUNDCOLOR,bf
-    line(x,y)-(x+wdth*CS_BB, y+hght*CS_BB),BORDERCOLOR,b
+    line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BACKGROUNDCOLOR,bf
+    line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BORDERCOLOR,b
     x+=BB\2
     y+=BB\2
     draw string(x, y), "Count(total): " & qt_getCount(qt), TEXTCOLOR:y+=CS
@@ -110,9 +109,8 @@ end sub
 sub renderMouseDebug(x as integer, y as integer, ms as Mouse ptr)
     dim as integer wdth = 21
     dim as integer hght = 5
-    dim as integer CS_BB = CS + BB
-    line(x,y)-(x+wdth*CS_BB, y+hght*CS_BB),BACKGROUNDCOLOR,bf
-    line(x,y)-(x+wdth*CS_BB, y+hght*CS_BB),BORDERCOLOR,b
+    line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BACKGROUNDCOLOR,bf
+    line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BORDERCOLOR,b
     x+=BB\2
     y+=BB\2
     draw string(x, y), "State: " & ms->state, TEXTCOLOR:y+=8
