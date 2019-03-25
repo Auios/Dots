@@ -1,5 +1,3 @@
-#pragma once
-
 #include "crt/stdio.bi"
 
 sub echo(s as string = "")

@@ -1,714 +1,3 @@
-[13:58] <qwebirc23602> Hey Mysoft
-[13:58] <+Mysoft> hi
-[13:58] <+Mysoft> dont use circles
-[13:58] <qwebirc23602> Alright
-[13:58] <+Mysoft> for 1px
-[13:58] <+Mysoft> :P
-[13:58] <qwebirc23602> theyre just a place holder
-[13:58] <+Mysoft> use direct memory poke
-[13:58] <+Mysoft> :P
-[13:58] <qwebirc23602> I actually will be using animated sprites
-[13:58] <qwebirc23602> and thats what im here to talk about now
-[13:58] <qwebirc23602> Im trying to get FreeImage or libPng examples to work
-[13:59] <qwebirc23602> I downloaded freebasic from the main website and it seems to be missing the libraries
-[13:59] <qwebirc23602> so I went to their respected distributors and their lib files wont work
-[13:59] <qwebirc23602> so I tried using third party binaries
-[13:59] <qwebirc23602> still no luck
-[14:00] <qwebirc23602> Do you happen to have the win32 binaries for libpng or freeimage?
-[14:01] <qwebirc23602> Poke?
-[14:01] <qwebirc23602> https://www.freebasic.net/wiki/wikka.php?wakka=KeyPgPoke
-[14:01] <+Zappelin> Title: KeyPgPoke: FBWiki (at www.freebasic.net)
-[14:16] <qwebirc23602> https://imgur.com/a/okEh88l
-[14:16] <qwebirc23602> Cant even find this mysterious libpng3.dll
-[14:16] <qwebirc23602> whats the point in having examples if you cant even find the files to run them
-[14:16] <qwebirc23602> aaaaaaaaaa
-[14:20] <qwebirc23602> Oh shit. I got freeImage to work
-[14:20] <qwebirc23602> something to do with zlib
-[14:40] <+Mysoft> well not poke
-[14:41] <+Mysoft> and yes i have win32 binaries for libpng and freeimage
-[14:41] <+Mysoft> but i use fbpng
-[14:41] <+Mysoft> or winapi :P
-[14:41] <+Mysoft> to load pngs
-[14:41] <+Mysoft> anyway no poke... but pointers
-[14:41] <qwebirc23602> fbpng?
-[14:41] <+Mysoft> similar to poke.... but pointers are much better and more flexible
-[14:41] <qwebirc23602> can you send that my way
-[14:41] <+Mysoft> sure
-[14:41] <+Mysoft> i think the only "inneficiency" of fbpng
-[14:41] <qwebirc23602> Yeah im fine with using pointers but im unfamiliar with FBGFX I suppose
-[14:41] <+Mysoft> is that it only works with 32bpp
-[14:42] <qwebirc23602> Well I intend on using 32bpp
-[14:42] <+Mysoft> well you have the screenlock
-[14:42] <+Mysoft> so just put screenptr on a global variable
-[14:42] <+Mysoft> of ulong type
-[14:42] <+Mysoft> and then....
-[14:42] <+Mysoft> you can
-[14:42] <+Mysoft> pScreen[ iY*ScreenWid + iX ] = rgb(....)
-[14:42] <qwebirc23602> so screenlock() first and then get the screenptr?
-[14:42] <+Mysoft> much faster than pset
-[14:42] <+Mysoft> no the screenptr you just need to do one
-[14:42] <+Mysoft> after screenres
-[14:42] <qwebirc23602> right I thought so
-[14:43] <+Mysoft> and store it on the global variable
-[14:43] <+Mysoft> pScreen
-[14:43] <+Mysoft> screenlock allows direct access to that (other than make the screen not update :P)
-[14:43] <+Mysoft> so just be careful with pScreen to not draw outside boundaries
-[14:43] <+Mysoft> and then using pointers
-[14:43] <+Mysoft> is like 50x faster than pset
-[14:43] <+Mysoft> (or circle) for a single point
-[14:43] <+Mysoft> due the pset/circle overhead
-[14:44] <+Mysoft> as they use double... to coordinate and do a zillion checks before drawing
-[14:44] <+Mysoft> :P
-[14:44] <+Mysoft> so for small circles (radius < 5?)
-[14:44] <+Mysoft> using pointers is waay faster
-[14:45] <qwebirc23602> Well
-[14:45] <qwebirc23602> I have a question about the custom keyword
-[14:45] <qwebirc23602> Put (0, 0), image, custom, @dither
-[14:45] <qwebirc23602> https://pastebin.com/tgcEApkt
-[14:46] <qwebirc23602> How come my transparency isnt working
-[14:46] <qwebirc23602> http://prntscr.com/n2b4hs
-[14:46] <+Zappelin> Title: Screenshot by Lightshot (at prntscr.com)
-[14:46] <qwebirc23602> oh wait
-[14:46] <qwebirc23602> I think i know
-[14:46] <qwebirc23602> I have to OR them together
-[14:47] <qwebirc23602> Return src OR dst
-[14:47] <qwebirc23602> not exactly the result I wanted...
-[14:54] <qwebirc23602> http://prntscr.com/n2b817
-[14:54] <+Zappelin> Title: Screenshot by Lightshot (at prntscr.com)
-[14:54] <qwebirc23602> well that got me what I wanted
-[15:03] <qwebirc23602> 49152 calls to that custom function per frame
-[15:03] <qwebirc23602> wew
-[15:03] <qwebirc23602> 0.8ms to 1.1ms per frame
-[15:16] <+Mysoft> i would say to not use put with custom
-[15:16] <+Mysoft> as that is slooow
-[15:16] <+Mysoft> if you will OR
-[15:16] <+Mysoft> you have the OR
-[15:17] <+Mysoft> if you will really need a custom put
-[15:17] <+Mysoft> then theres something better that can be done
-[15:17] <+Mysoft> with a trick
-[15:17] <+Mysoft> where you get the INNER function call
-[15:17] <+Mysoft> to deal with a whole line
-[15:17] <+Mysoft> instead of a function call per pixel
-[15:17] <+Mysoft> (so you get again a shitload of speed :P)
-[15:18] <qwebirc23602> Can you show me a quick example? Im not really sure what that even looks like
-[15:18] <qwebirc23602> "Inner function call"
-[15:18] <qwebirc23602> that sounds new to me
-[15:18] <+Mysoft> its not documented :)
-[15:18] <qwebirc23602> I see
-[15:18] <+Mysoft> yes i will show you in a minute
-[15:18] <qwebirc23602> Ah thank you
-[15:30] <+Mysoft> ok back
-[15:30] <+Mysoft> so let me find my source for that for you....
-[15:31] <qwebirc23602> Alright
-[16:06] <+Mysoft> here qwebirc23602
-[16:06] <+Mysoft> http://mytdt.zapto.org/Uploads/CustomPut.zip
-[16:07] <+Mysoft> it only really get speed when used with -gen gcc
-[16:07] <+Mysoft> but it allows to create more advanced custom puts
-[16:07] <+Mysoft> since you have access to the whole block that will be draw
-[16:07] <+Mysoft> so here freebasic normal one calling a function per pixel
-[16:07] <+Mysoft> does 75ns
-[16:07] <+Mysoft> mine does 68ns
-[16:07] <+Mysoft> and...
-[16:08] <+Mysoft> mine with -gen gcc does 20ns
-[16:08] <+Mysoft> i believe the freebasic one compiling with -gen gcc may be like 50ns
-[16:09] <+Mysoft> so with mine you could have stuff like... being able to create a alpha put for 8bpp or 16bpp
-[16:09] <+Mysoft> using an external mask :)
-[16:19] <+Mysoft> and if you are using alpha on put...
-[16:19] <+Mysoft> i have a replacement for the fbgfx one that uses SSE instead of MMX
-[16:19] <+Mysoft> so its 2x faster
-[16:25] <qwebirc23602> if (uSource and &hFFFFFF)<>&hFF00FF then
-[16:25] <qwebirc23602> why not just do
-[16:25] <qwebirc23602> if(uSource = &hFF00FF) then
-[16:26] <qwebirc23602> if(uSource <> &hFF00FF) then I mean
-[16:27] <qwebirc23602> Oh i see
-[16:30] <qwebirc23602> Mysoft why do you have all those defines at the top?
-[16:31] <qwebirc23602> Is it just to make the line shorter and cleaner looking?
-[16:31] <qwebirc23602> sub _fb_hPutCustom_ cdecl alias "fb_hPutCustom" (P1,P2,P3,P4,P5,P6,P7,P8,P9)
-[16:31] <qwebirc23602> so its not crazy long
-[16:36] <qwebirc23602> I dont understand where and how exactly _fb_hPutCustom_ is called
-[16:36] <qwebirc23602> alias "fb_hPutCustom"
-[16:36] <qwebirc23602> are you just overwriting FB's default function?
-[16:36] <qwebirc23602>  put(mx-HalfSz,my-HalfSz),p,custom,m_Blend1,0
-[16:51] <+Mysoft> yes
-[16:51] <+Mysoft> i am overwriting FBs default function
-[16:52] <+Mysoft> *overriding
-[16:53] <+Mysoft> and yes the defines is to make it more organized
-[16:53] <+Mysoft> and as you probabily guessed
-[16:53] <+Mysoft> i'm ignoring the alpha channel with the &hFF00FF
-[16:53] <+Mysoft> under certain conditiions it could be simplified to
-[16:53] <+Mysoft> if (uSource <> &hFFFF00FF)
-[16:54] <+Mysoft> or uSource <>&hFF00FF
-[16:54] <+Mysoft> but freebasic when setting pixels set the alpha FF
-[16:54] <+Mysoft> winapi sets the alpha 00
-[16:54] <+Mysoft> (as in some functions it uses alpha as palette index :D)
-[16:55] <+Mysoft> and m_Blend1 is just a dummy
-[16:55] <+Mysoft> because freebasic does not let it compile with just 0 there
-[16:55] <+Mysoft> altough if you did override other method
-[16:55] <+Mysoft> like
-[16:55] <+Mysoft> or xor and
-[16:55] <+Mysoft> then such parameter would not be necessary
-[16:56] <+Mysoft> but this parameter is useful since you can use it to select mode of operation and the extra parameter (that on the example is 0)
-[16:56] <+Mysoft> is also useful
-[16:56] <+Mysoft> for many things :)
-[16:57] <+Mysoft> so you get two parameters to pass
-[16:57] <+Mysoft> altough the first need to be cast to the typeof a function...
-[16:57] <+Mysoft> altough its not big deal :P
-[17:02] <+Mysoft> you could make a macro to pass both parameters as any thing
-[17:02] <+Mysoft> so with this weird macro
-[17:02] <+Mysoft> #define Parms(_A,_B) cast(typeof(function (I as uinteger,O as uinteger,P as any ptr) as uinteger) ptr,_A),cast(any ptr,_B)
-[17:02] <+Mysoft> you can have
-[17:02] <+Mysoft> put(mx-HalfSz,my-HalfSz),p,custom,Parms(0,0)
-[17:02] <+Mysoft> that is simpler
-[18:16] <qwebirc23602> This is pretty interesting
-[18:16] <qwebirc23602> Also I changed your code to do
-[18:17] <qwebirc23602> if (iPix <> &hFFFF00FF) then
-[18:17] <qwebirc23602> It made it slightly faster
-[18:17] <qwebirc23602> prior to changing I was getting 8 to 11
-[18:17] <qwebirc23602> after the change im at 6 to 9
-[18:17] <+Mysoft> yeah
-[18:18] <+Mysoft> the code i had was generic as it had to work independent of that
-[18:18] <+Mysoft> but that speed up
-[18:18] <+Mysoft> is almost insignificant
-[18:18] <+Mysoft> when using -gen gcc
-[18:18] <+Mysoft> so using -gen gcc
-[18:18] <+Mysoft> avoid floats
-[18:18] <+Mysoft> and using pointers
-[18:19] <+Mysoft> is the combo to start maximizing performance :P
-[18:19] <qwebirc23602> yeah lots of room for optimizations
-[18:19] <qwebirc23602> tell me
-[18:19] <qwebirc23602> why do you do this
-[18:19] <qwebirc23602> dim as integer x=any,y=any,xx=any,yy=any
-[18:19] <qwebirc23602> instead of just
-[18:19] <qwebirc23602> dim as integet x,y,xx,yy
-[18:19] <qwebirc23602> integer*
-[18:19] <+Mysoft> because
-[18:19] <+Mysoft> dim as integer x,y,xx,yy
-[18:19] <+Mysoft> will generate
-[18:19] <+Mysoft> push 0
-[18:19] <+Mysoft> push 0
-[18:19] <+Mysoft> push 0
-[18:19] <+Mysoft> push 0
-[18:19] <+Mysoft> ----------
-[18:19] <+Mysoft> while
-[18:19] <+Mysoft> dim as integer x=any,y=any,xx=any,yy=any
-[18:19] <+Mysoft> will generate
-[18:19] <+Mysoft> sub esp, 16
-[18:20] <+Mysoft> ------
-[18:20] <qwebirc23602> 16?
-[18:20] <+Mysoft> yes
-[18:20] <qwebirc23602> ah
-[18:20] <+Mysoft> 4 bytes per integer
-[18:20] <qwebirc23602> 16 bytes
-[18:21] <+Mysoft> so 4*4 = 16
-[18:21] <qwebirc23602> right right
-[18:21] <qwebirc23602> haha
-[18:21] <qwebirc23602> Im not as familiar with assembly. Although I have an assembly emulator project right now
-[18:21] <+Mysoft> in other words it does not initialize the variables
-[18:21] <qwebirc23602> inspired from TIS100
-[18:21] <qwebirc23602> right right!
-[18:21] <qwebirc23602> Okay that makes sense
-[18:21] <+Mysoft> not initializing them is the default of what C do
-[18:21] <+Mysoft> and on this case
-[18:21] <+Mysoft> doing it... is a speed up
-[18:21] <+Mysoft> since we will initialize those later anyway
-[18:21] <qwebirc23602> Of course!
-[18:22] <qwebirc23602> I should modify my code for this now too
-[18:22] <+Mysoft> but ofcourse this just affect local variables
-[18:22] <+Mysoft> on global variables
-[18:22] <+Mysoft> if you do the "any"
-[18:22] <+Mysoft> it will reserve space on the BSS section
-[18:22] <+Mysoft> if you dont use the any
-[18:22] <+Mysoft> then the 0,0,0,0
-[18:23] <+Mysoft> will be on the data section
-[18:23] <+Mysoft> so using any on globals... does not speed up
-[18:23] <qwebirc23602> whats the difference
-[18:23] <+Mysoft> but it does reduce binary size
-[18:23] <qwebirc23602> between .data and .bss
-[18:23] <+Mysoft> because the bss section just "reserve space" for variables
-[18:23] <+Mysoft> while the .data section contains the actual contents
-[18:23] <+Mysoft> of each variable...
-[18:23] <qwebirc23602> I see
-[18:23] <+Mysoft> and btw
-[18:24] <+Mysoft> if you will use fixed size arrays that are global
-[18:24] <+Mysoft> using
-[18:24] <+Mysoft> static shared as integer MyArray( 31 )
-[18:24] <+Mysoft> is faster than
-[18:24] <+Mysoft> dim shared as integer MyArray( 31 )
-[18:24] <qwebirc23602> speaking of arrays
-[18:24] <+Mysoft> because the "dim shared" will actually create a freebasic array descriptor
-[18:24] <+Mysoft> and allocate the memory dynamically
-[18:24] <+Mysoft> while...
-[18:24] <+Mysoft> using
-[18:24] <+Mysoft> static shared as integer...
-[18:25] <qwebirc23602> Im going to be making some kind of dynamic array system for my program. Would you recommend doing something like
-[18:25] <+Mysoft> the space for the array is reserved on the binary
-[18:25] <+Mysoft> and... when freebasic access those variables
-[18:25] <qwebirc23602> dim as integer ptr myArray = new integer[100]
-[18:25] <+Mysoft> with dim shared he would need to do like...
-[18:25] <qwebirc23602> or dim as integer myArray(100)
-[18:25] <+Mysoft> mov esi, ArrayPointer
-[18:25] <+Mysoft> mov eax, [esi+offset*4]
-[18:25] <+Mysoft> ------
-[18:25] <+Mysoft> while with static shared
-[18:25] <+Mysoft> it can directly do
-[18:25] <+Mysoft> mov eax, [array+offset*4]
-[18:26] <+Mysoft> so another speed up
-[18:26] <+Mysoft> obviously when compiling with -gen gcc
-[18:26] <+Mysoft> it will end optimizing the dynamic arrays a bit
-[18:26] <+Mysoft> by reserving a register to keep the base array
-[18:26] <+Mysoft> and using that several times
-[18:26] <+Mysoft> (but also put more pressure on registers)
-[18:27] <qwebirc23602> Hmm
-[18:27] <qwebirc23602> Im not quite at that level yet
-[18:27] <+Mysoft> yeah but it does not matter
-[18:27] <+Mysoft> all that i said
-[18:27] <+Mysoft> is that if you will have a global fixed size array
-[18:27] <+Mysoft> you should use
-[18:27] <+Mysoft> static shared
-[18:27] <+Mysoft> instead of dynamic shared :)
-[18:28] <+Mysoft> *instead of dim shared
-[18:28] <+Mysoft> as for your dynamic array....
-[18:28] <+Mysoft> use whatever you feel better
-[18:28] <+Mysoft> since both are doing the same "new" internally
-[18:28] <+Mysoft> but the new... is more flexible
-[18:29] <+Mysoft> while the "dim" will follow scope :)
-[18:29] <qwebirc23602> is there any difference in performance between allocate and new?
-[18:29] <+Mysoft> no
-[18:29] <+Mysoft> new does allocate
-[18:29] <+Mysoft> the only difference between them
-[18:29] <+Mysoft> is that new... will call a "constructor"
-[18:29] <+Mysoft> if the type has one
-[18:29] <+Mysoft> but thats OOP
-[18:29] <+Mysoft> and i avoid that :)
-[18:29] <qwebirc23602> I see
-[18:30] <qwebirc23602> I know OOP is less efficient but the code organization is really appealing to me
-[18:31] <+Mysoft> yeah but i totally avoid that
-[18:31] <+Mysoft> and i would not have helped you
-[18:31] <+Mysoft> if your code had that :)
-[18:31] <qwebirc23602> whats your convention for keeping similar functions that are used with a specific structure organized?
-[18:31] <+Mysoft> since i dont share my knowledge about those optimizations
-[18:31] <+Mysoft> for people that would not have the guts to do the right thing :)
-[18:31] <qwebirc23602> Are there optimizations for OOP?
-[18:31] <+Mysoft> yes
-[18:32] <+Mysoft> not using OOP
-[18:32] <+Mysoft> :P
-[18:32] <qwebirc23602> like what
-[18:32] <qwebirc23602> ah
-[18:32] <+Mysoft> ofcourse you can do bad oop and good oop
-[18:32] <qwebirc23602> what is good oop
-[18:32] <+Mysoft> ever heard of a unicorn?
-[18:32] <+Mysoft> :P
-[18:32] <qwebirc23602> Nope
-[18:32] <+Mysoft> thats good oop
-[18:32] * Mysoft runz
-[18:32] <qwebirc23602> Alright
-[18:32] <qwebirc23602> > whats your convention for keeping similar functions that are used with a specific structure organized?
-[18:33] <+Mysoft> anyway good oop, could be done without abusing of oop stuff
-[18:33] <+Mysoft> but the thing is... freebasic wont optimize the oop like C++ do
-[18:33] <+Mysoft> so the results are even slower
-[18:33] <+Mysoft> and even if you pass that using -gen gcc
-[18:33] <qwebirc23602> whats slower about it
-[18:33] <qwebirc23602> the compiling?
-[18:33] <+Mysoft> it will pass as "low level" and then gcc wont understand
-[18:33] <+Mysoft> to optimize...
-[18:33] <+Mysoft> qwebirc23602 no
-[18:33] <+Mysoft> the compiling is probabily slower
-[18:33] <+Mysoft> but compile time slowdown is much more excusable
-[18:34] <+Mysoft> but the slower about it is
-[18:34] <+Mysoft> is the fact that what is generated is hidden from you
-[18:34] <+Mysoft> and then you wont see the optimizations
-[18:34] <+Mysoft> because its not you that are generating the code
-[18:34] <+Mysoft> and those optimizations can be done
-[18:34] <+Mysoft> the same happens
-[18:34] <+Mysoft> between C/FB and ASM
-[18:34] <+Mysoft> sometimes you only see the actual optimizations on the C/FB code
-[18:35] <+Mysoft> when you try to do the ASM yourself
-[18:35] <+Mysoft> so then its possible to optimize the C/FB up to some level
-[18:35] <+Mysoft> but the compiler can only do so much...
-[18:35] <+Mysoft> [19:33] <qwebirc23602> > whats your convention for keeping similar functions that are used with a specific structure organized?
-[18:36] <+Mysoft> hum...
-[18:36] <qwebirc23602> For example
-[18:36] <+Mysoft> i just keep them close one to another?
-[18:36] <qwebirc23602> I do OOP in C++ sometimes
-[18:36] <qwebirc23602> I dont do OOP in FB because im unfamiliar with it
-[18:36] <qwebirc23602> so
-[18:36] <qwebirc23602> in FB
-[18:36] <qwebirc23602> my Rect struct
-[18:36] <qwebirc23602> I'd name things like
-[18:37] <qwebirc23602> rect_resize(Rect r)
-[18:37] <qwebirc23602> if I had made it in OOP in C++
-[18:37] <qwebirc23602> I'd have had a method to a Rect class
-[18:37] <qwebirc23602> Rect.resize()
-[18:37] <qwebirc23602> that kind of convention
-[18:37] <+Mysoft> yes
-[18:37] <+Mysoft> but i would never do that
-[18:37] <+Mysoft> because that hides optimizations
-[18:37] <qwebirc23602> oh?
-[18:37] <qwebirc23602> optimizatins?
-[18:37] <+Mysoft> yes for example
-[18:37] <+Mysoft> you dont have control of where rect is
-[18:38] <+Mysoft> so you are forced to keep rect allocated along the class
-[18:38] <+Mysoft> which means you can't use foreign rects
-[18:38] <+Mysoft> or an array of rects
-[18:38] <+Mysoft> for proper optimization
-[18:38] <+Mysoft> without having to duplicate a shitload of thing
-[18:38] <qwebirc23602> youre talking about
-[18:38] <qwebirc23602> if you were using classes
-[18:38] <+Mysoft> since the "object"
-[18:38] <qwebirc23602> youd have to duplicate
-[18:38] <qwebirc23602> a lot of things?
-[18:38] <qwebirc23602> in memory
-[18:38] <qwebirc23602> right
-[18:39] <qwebirc23602> or are you talking about non OOP
-[18:39] <+Mysoft> i'm talking about OOP
-[18:39] <+Mysoft> it forces stuff that reduces capability for optimization
-[18:39] <+Mysoft> increase generated code size
-[18:39] <+Mysoft> and waste memory
-[18:39] <qwebirc23602> I see
-[18:39] <+Mysoft> so to answer your question
-[18:39] <+Mysoft> i would avoid have those locts
-[18:39] <qwebirc23602> locts?
-[18:39] <+Mysoft> *rects
-[18:40] <+Mysoft> rects stored that way...
-[18:40] <+Mysoft> and i would prefer to use arrays
-[18:40] <+Mysoft> an array of structures
-[18:40] <qwebirc23602> How would that work in regards to my quadtree
-[18:40] <+Mysoft> well you would store offsets
-[18:40] <+Mysoft> to the array
-[18:40] <qwebirc23602> so
-[18:40] <+Mysoft> instead of pointers to the array
-[18:40] <qwebirc23602> a single huge array
-[18:41] <qwebirc23602> to store
-[18:41] <qwebirc23602> everything
-[18:41] <+Mysoft> yes...
-[18:41] <qwebirc23602> alright but
-[18:41] <+Mysoft> or more arrays separated by content
-[18:41] <+Mysoft> theres not a "single way"
-[18:41] <qwebirc23602> this array would definitely need to be dynamic
-[18:41] <+Mysoft> it all "depends" :)
-[18:41] <qwebirc23602> and wouldnt resizing every frame update be very bad
-[18:41] <qwebirc23602> resizing the array
-[18:41] <+Mysoft> why you would resize every frame?
-[18:42] <+Mysoft> you would only resize when the size changes substantially
-[18:42] <qwebirc23602> so
-[18:42] <+Mysoft> so you increase the array size every N additions
-[18:42] <qwebirc23602> just allocate a bunch of space regardless of how many you have
-[18:42] <+Mysoft> yes
-[18:42] <+Mysoft> based on how much you will use
-[18:42] <qwebirc23602> I see
-[18:43] <+Mysoft> a prediction of the minimum
-[18:43] <+Mysoft> or average...
-[18:43] <+Mysoft> then you increase or decrease in bunches
-[18:43] <+Mysoft> for example if you know you will have the array to be bigger than 4kb in memory
-[18:43] <+Mysoft> it makes sense to only do incremenets of decrements of 4kb
-[18:44] <+Mysoft> because 4kb is the size of a PAGE
-[18:44] <+Mysoft> doing so... improves the allocation/resize speed as well
-[18:44] <qwebirc23602> must it be exactly 4kb?
-[18:44] <+Mysoft> yes
-[18:44] <qwebirc23602> if its off by 1 or more bytes
-[18:44] <+Mysoft> 4096 bytes :)
-[18:44] <qwebirc23602> will it not have any improvements
-[18:44] <qwebirc23602> if its off by 1 byte
-[18:44] <+Mysoft> yeah probabily
-[18:45] <qwebirc23602> this array
-[18:45] <qwebirc23602> of rects
-[18:45] <qwebirc23602> you said
-[18:45] <qwebirc23602> it would be a global array?
-[18:46] <qwebirc23602> so if I wanted to resize one rect
-[18:46] <qwebirc23602> I'd just do
-[18:46] <qwebirc23602> rect_resize(int index, params p)
-[18:46] <qwebirc23602> I dont think ill be using a global array
-[18:46] <qwebirc23602> right now im doing this:
-[18:47] <+Mysoft> well it all depends
-[18:47] <qwebirc23602> rect_resize(rect* r, params p)
-[18:47] <+Mysoft> but using globals when you wont have several objects
-[18:47] <+Mysoft> or objects outside of your control
-[18:47] <qwebirc23602> I really avoid using globals
-[18:48] <qwebirc23602> I run my main loop instead a main function
-[18:48] <qwebirc23602> end(main(__FB_ARGC__, __FB_ARGV__))
-[18:48] <qwebirc23602> and all my main variables are declared inside
-[18:48] <qwebirc23602> function main(argc as integer, argv as zstring ptr ptr) as integer
-[18:48] <+Mysoft> yeah well most of people have that
-[18:48] <+Mysoft> because they dont know how much you can obtain out of that
-[18:48] <qwebirc23602> thats how it is in C
-[18:49] <qwebirc23602> what can you obtain outside of it
-[18:49] <+Mysoft> as they reduce the ability to make generic stuff
-[18:49] <+Mysoft> but generic kinda sux
-[18:49] <+Mysoft> so i avoid generics in most ocassions
-[18:49] <+Mysoft> but globals as i said earlier
-[18:49] <qwebirc23602> I dont actually know what you mean by genetics
-[18:49] <qwebirc23602> generics*
-[18:50] <qwebirc23602> what is a generic
-[18:50] <qwebirc23602> like
-[18:50] <qwebirc23602> var x = 5?
-[18:50] <+Mysoft> no
-[18:50] <+Mysoft> generic is something that is more reusable
-[18:50] <+Mysoft> as it works for more cases
-[18:50] <+Mysoft> instead of you having to change it
-[18:50] <+Mysoft> for each new usage of it
-[18:50] <+Mysoft> or in other words
-[18:50] <qwebirc23602> so like
-[18:50] <qwebirc23602> any ptr
-[18:50] <+Mysoft> for lazy :P
-[18:50] <qwebirc23602> being used to store different data types?
-[18:50] <+Mysoft> maybe...
-[18:50] <+Mysoft> but that wont have a speed penalty
-[18:51] <+Mysoft> so when the generic does not have speed penalty or over complexity
-[18:51] <+Mysoft> then i'm fine with it
-[18:52] <+Mysoft> for your case... it probabily could work well with the dynamic arrays
-[18:52] <+Mysoft> as long they are not resized every addition or whatever
-[18:52] <+Mysoft> you probabily would have other areas where you can improve
-[18:52] <+Mysoft> also one thing for you to notice
-[18:52] <+Mysoft> on freebasic...
-[18:52] <+Mysoft> without using -gen gcc
-[18:52] <+Mysoft> having a function like you have
-[18:52] <+Mysoft> that just have one simple line of code or a few
-[18:52] <+Mysoft> that does not do much
-[18:53] <+Mysoft> already slowdown the execution a bit
-[18:53] <+Mysoft> because of the call/ret overhead
-[18:53] <+Mysoft> so if you would call such functions
-[18:53] <+Mysoft> thousands of times per frame
-[18:53] <+Mysoft> you should turn those functions into macros
-[18:53] <qwebirc23602> macros...
-[18:53] <+Mysoft> since freebasic unfortunately does not have inlined functions
-[18:53] <+Mysoft> but if you start compiling with -gen gcc
-[18:53] <qwebirc23602> thatd be really nice to have
-[18:54] <+Mysoft> -gen gcc will automatically inline those small functions
-[18:54] <+Mysoft> but freebasic by itself does not
-[18:54] <+Mysoft> so a macro instead of a function
-[18:54] <+Mysoft> would force it...
-[18:54] <qwebirc23602> Can you show me an example
-[18:55] <+Mysoft> well this
-[18:55] <+Mysoft> sub renderRect(r as Rect ptr, zoom as single = 1, c as uinteger = rgb(255, 255 ,255))
-[18:55] <+Mysoft>     line(r->position.x * zoom, r->position.y * zoom)-((r->position.x + r->size.x) * zoom, (r->position.y + r->size.y) * zoom),c,b
-[18:55] <+Mysoft> end sub
-[18:55] <+Mysoft> could be turned to this
-[18:55] <qwebirc23602> Yeah thats my function for rendering a rect
-[18:56] <+Mysoft> #macro renderRect( _r , _z , _c )
-[18:56] <+Mysoft>   with *_r
-[18:58] <+Mysoft>       line(.position.x * _z, .position.y * _z)-((.position.x + .size.x) * _z, (.position.y + .size.y) * _z),_c,b
-[18:58] <+Mysoft>   end with
-[18:58] <+Mysoft> #endmacro
-[18:58] <+Mysoft> ----------
-[18:58] <qwebirc23602> Why not just macro everything then?
-[18:58] <+Mysoft> well for a series of reasons
-[18:58] <+Mysoft> first using a macro you lose the "default parameters"
-[18:58] <+Mysoft> =1 , =rgb(255,255,255)
-[18:58] <+Mysoft> second...
-[18:58] <+Mysoft> macros wont do parameter validation
-[18:59] <+Mysoft> its just text... copy/paste
-[18:59] <+Mysoft> that said
-[18:59] <+Mysoft> if you had
-[18:59] <+Mysoft> renderRect( MyRect , a+b*c/2 , rgb(255,255,255) )
-[18:59] <+Mysoft> with the function....
-[18:59] <+Mysoft> the a+b*c/2
-[19:00] <+Mysoft> would be precomputed and stored on a temporary variable on the stack
-[19:00] <+Mysoft> and then the function is called
-[19:00] <+Mysoft> with the macro
-[19:00] <+Mysoft> that a+b*c/2 would be "repeated" everytime you used the _z
-[19:00] <qwebirc23602> I see
-[19:00] <+Mysoft> and then that would end slowing down
-[19:01] <+Mysoft> not to mention... i did one error on purpose
-[19:01] <+Mysoft> to show the problems of that
-[19:01] <qwebirc23602> error/
-[19:01] <+Mysoft> yes
-[19:01] <qwebirc23602> ?
-[19:01] <+Mysoft> the macro would end generating this:
-[19:01] <+Mysoft> line(.position.x * a+b*c/2, .position.y * a+b*c/2)-((.position.x + .size.x) * a+b*c/2, (.position.y + .size.y) * a+b*c/2),_c,b
-[19:02] <+Mysoft> and...
-[19:02] <+Mysoft> x * a+b*c/2
-[19:02] <+Mysoft> is...
-[19:02] <+Mysoft> (x*a)+(b*c/2)
-[19:02] <+Mysoft> not...
-[19:02] <+Mysoft> x*(a+b)*(c/2)
-[19:02] <+Mysoft> as you wanted :P
-[19:02] <qwebirc23602> makes sense
-[19:02] <+Mysoft> so it can end with errors like t hat
-[19:02] <+Mysoft> that you can see
-[19:02] <+Mysoft> so...
-[19:02] <+Mysoft> on the macro
-[19:02] <+Mysoft> you would need to use
-[19:02] <+Mysoft> (_z)
-[19:03] <+Mysoft> to enforce the math order
-[19:03] <+Mysoft> enforcing the math order is a good practice in all cases btw :P
-[19:03] <qwebirc23602> using ()'s?
-[19:03] <+Mysoft> yeah
-[19:03] <qwebirc23602> got it
-[19:03] <+Mysoft> so anyway the macro can cause problems
-[19:03] <+Mysoft> that can slowdown
-[19:03] <+Mysoft> and so on
-[19:03] <+Mysoft> thats why you would avoid using them all the time
-[19:03] <+Mysoft> not to mention
-[19:03] <+Mysoft> it will repeat that code
-[19:03] <+Mysoft> everytime you used it
-[19:04] <+Mysoft> if you had 300 lines using that macro
-[19:04] <+Mysoft> it would repeat the same code 300 lines
-[19:04] <+Mysoft> which is faster
-[19:04] <+Mysoft> but makes your code bigger :)
-[19:04] <qwebirc23602> my computer can handle it B)
-[19:04] <+Mysoft> yeah... but
-[19:04] <+Mysoft> sand is just tiny rocks :P
-[19:04] <+Mysoft> so you dont see the rocks
-[19:05] <+Mysoft> but they are there
-[19:05] <+Mysoft> and they accumulate enough :)
-[19:05] <+Mysoft> those micro optimizations
-[19:05] <qwebirc23602> I get your point
-[19:05] <+Mysoft> sometimes can be avoided to avoid being too extreme
-[19:05] <qwebirc23602> Im going to go through my code and make these optimizations
-[19:05] <+Mysoft> but if you code saying stuff like my "computer can handle it"
-[19:05] <qwebirc23602> I have a lot of wrapper functions
-[19:05] <+Mysoft> you will always be more and more forgiving
-[19:05] <+Mysoft> and wont get used to doing it right
-[19:05] <+Mysoft> so in your case
-[19:06] <+Mysoft> i would recommend using the -gen gcc switch
-[19:06] <+Mysoft> because having gcc doing THIS kind of micro optimziation
-[19:06] <+Mysoft> is a good balance
-[19:06] <qwebirc23602> is -o 3 useful?
-[19:06] <qwebirc23602> -O 3 *
-[19:06] <+Mysoft> YES
-[19:06] <+Mysoft> with -gen gcc
-[19:06] <qwebirc23602> should i be compiling with -gen gcc and -O 3 from now on?
-[19:06] <+Mysoft> specially since the pixel pointer and... other possible "fixed point" only get really fast
-[19:06] <+Mysoft> if you can... yes!
-[19:06] <qwebirc23602> is there ever a time when I shouldnt be using -gen gcc -O 3?
-[19:07] <+Mysoft> some code may not be fully compatible to it
-[19:07] <+Mysoft> but most of the time it will be because of inlined asm
-[19:07] <qwebirc23602> -s gui ?
-[19:07] <+Mysoft> inlined asm... is not 101% correct with -gen gcc
-[19:08] <qwebirc23602> I dont plan on using inline asm
-[19:08] <qwebirc23602> im not familiar enough to do it
-[19:08] <+Mysoft> but so... using that is probabily good enough :)
-[19:08] <+Mysoft> for all cases
-[19:08] <+Mysoft> -s gui
-[19:08] <+Mysoft> is to compile without the console
-[19:08] <+Mysoft> i only use that when "releasing"
-[19:09] <+Mysoft> otherwise i always have the console for debugging
-[19:09] <+Mysoft> or for kill the program in an emergency
-[19:09] <+Mysoft> like dead loop :P
-[19:09] <+Mysoft> *infinite loop
-[19:09] <+Mysoft> or dead lock
-[19:09] <+Mysoft> anyway
-[19:09] <qwebirc23602> does killing the program in FB like that deallocate any memory you allocated
-[19:09] <+Mysoft> about your line
-[19:09] <+Mysoft> yes
-[19:09] <qwebirc23602> or does that allocated memory stay on your machine until restart
-[19:09] <+Mysoft> nah it deallocates
-[19:10] <+Mysoft> the OS does that
-[19:10] <qwebirc23602> ok about my line
-[19:10] <+Mysoft> even if you would kill the program
-[19:10] <+Mysoft> anyway...
-[19:10] <+Mysoft> for the line...
-[19:10] <+Mysoft> you have some optimization
-[19:11] <+Mysoft> for readability i would use a define to short the line size...
-[19:11] <+Mysoft> but theres also a thing that you should know that is possible
-[19:11] <qwebirc23602> oh?
-[19:11] <+Mysoft> this:
-[19:11] <+Mysoft> sub renderRect(r as Rect ptr, zoom as single = 1, c as uinteger = rgb(255, 255 ,255))
-[19:11] <+Mysoft>   #define _r r->position
-[19:12] <+Mysoft>   #define _p r->size
-[19:12] <+Mysoft>   line( r.x*zoom , r.y *zoom )-step( p.x*zoom , p.y*zoom ),c,b
-[19:12] <+Mysoft> end sub
-[19:12] <+Mysoft> ------
-[19:13] <+Mysoft> i actually should had named them _p and _s
-[19:13] <+Mysoft> as in position / size
-[19:13] <+Mysoft> but ok... xD
-[19:13] <qwebirc23602> yeah
-[19:13] <qwebirc23602> okay ill do that on my own
-[19:13] <+Mysoft> so the macro makes it looks better
-[19:13] <qwebirc23602> and you said there was an optimization?
-[19:13] <+Mysoft> without any speed cost
-[19:13] <qwebirc23602> yeah it does!
-[19:13] <+Mysoft> i did the optimization :P
-[19:13] <qwebirc23602> oh?
-[19:13] <+Mysoft> with the "step"
-[19:13] <+Mysoft> :P
-[19:14] <qwebirc23602> what the fuuuuuuck is that
-[19:14] <qwebirc23602> Why have i never seen this
-[19:14] <+Mysoft> "step" makes the second parameter an offset from the first coordinate
-[19:14] <qwebirc23602> oh my lord
-[19:14] <qwebirc23602> when was that added!?
-[19:14] <+Mysoft> so it does internally what you did with the position+size
-[19:14] <+Mysoft> since.... 8 years ago
-[19:14] <+Mysoft> i guess :P
-[19:14] <qwebirc23602> why have i never seen this
-[19:15] <qwebirc23602> Ive never seen that in any of the examples
-[19:15] <+Mysoft> i'm pretty sure QBASIC have that :P
-[19:15] <qwebirc23602> i never used qbasic
-[19:15] <+Mysoft> i'm just saying it exists since long
-[19:15] <+Mysoft> even before freebasic hehe
-[19:15] <qwebirc23602> Yikes
-[19:15] <qwebirc23602> Okay
-[19:15] <qwebirc23602> wow
-[19:15] <+Mysoft> but yes people often miss that
-[19:15] <qwebirc23602> that makes things way easier for me
-[19:15] <qwebirc23602> that should be in an example
-[19:15] <+Mysoft> because people are not used and avoid freebasic "quirk" syntax
-[19:15] <qwebirc23602> oh it is
-[19:15] <qwebirc23602> Line -Step(10,10),13
-[19:16] <+Mysoft> yeah -step
-[19:16] <+Mysoft> will use the current position as start point
-[19:16] <+Mysoft> instead of the provided
-[19:16] <qwebirc23602> whats that 13 for?
-[19:16] <+Mysoft> color 13
-[19:16] <+Mysoft> :P
-[19:16] <qwebirc23602> oh
-[19:16] <qwebirc23602> so just doing
-[19:16] <qwebirc23602> line-step(10,10)
-[19:16] <qwebirc23602> would draw from 0,0 to 10,10?
-[19:17] <+Mysoft> well if the last point was 0,0 yes
-[19:17] <+Mysoft> but so
-[19:17] <qwebirc23602> oh it draws from the LAST point?
-[19:17] <+Mysoft> yes
-[19:17] <+Mysoft> so...
-[19:17] <qwebirc23602> is the default last point 0,0
-[19:17] <+Mysoft> i think its the middle of the screen
-[19:17] <qwebirc23602> interesting
-[19:17] <+Mysoft> you probabily should not rely on that
-[19:17] <+Mysoft> but anyway
-[19:18] <qwebirc23602> no its 0,0
-[19:18] <qwebirc23602> just tested
-[19:18] <+Mysoft> ok on qbasic its middle of the screen
-[19:18] <+Mysoft> so that is a "bug" on freebasic
-[19:18] <+Mysoft> but not relly important
-[19:18] <+Mysoft> since as i said
-[19:18] <+Mysoft> one should not RELY on that
-[19:18] <+Mysoft> :P
-[19:18] <qwebirc23602> alright
-[19:18] <+Mysoft> line (5,5)-(15,15)
-[19:18] <+Mysoft> is the same as
-[19:18] <+Mysoft> err
-[19:18] <+Mysoft> line (5,5)-(15,15)
-[19:19] <+Mysoft> line -step(20,20)
-[19:19] <qwebirc23602> line(5,5)-step(10,10)
-[19:19] <+Mysoft> ---
-[19:19] <+Mysoft> is the same as...
-[19:19] <+Mysoft> line (5,5)-(15,15)
-[19:19] <+Mysoft> line (15,15)-(35,35)
-[19:19] <+Mysoft> ----
-[19:19] <qwebirc23602> righto
-[19:19] <qwebirc23602> wow
-[19:19] <qwebirc23602> im learning a lot
-[19:19] <+Mysoft> the step MAY add the benefit
-[19:19] <+Mysoft> that CAN be an optimization
-[19:19] <qwebirc23602> when would it not?
-[19:19] <+Mysoft> since you dont have to ADD that again
-[19:19] <qwebirc23602> yeah
-[19:19] <qwebirc23602> okay
-[19:20] <qwebirc23602> I see
-[19:20] <+Mysoft> but since the coordinates are passed using DOUBLE
-[19:20] <qwebirc23602> really?
-[19:20] <+Mysoft> yes :(
-[19:20] <qwebirc23602> can you just
-[19:20] <+Mysoft> because freebasic has to support this
-[19:20] <qwebirc23602> do that override thingy
-[19:20] <+Mysoft> window screen(0,0)-(1,1)
-[19:20] <qwebirc23602> like you did for custom
-[19:20] <+Mysoft> and then
-[19:20] <+Mysoft> line(0,0)-(0.5,0.5)
-[19:20] <+Mysoft> must work to draw to the middle of the screen
-[19:20] <+Mysoft> so for that reason... it was implemented with double
-[19:21] <+Mysoft> and no
-[19:21] <+Mysoft> i can't override that
 [19:21] <qwebirc23602> why
 [19:21] <+Mysoft> because the override would expect to be the same prototype
 [19:21] <qwebirc23602> ah
@@ -789,3 +78,922 @@
 [19:29] <+Mysoft> we just draw it using pointers inside your function
 [19:29] <+Mysoft> :P
 [19:29] <qwebirc23602> Alright
+[19:30] <+Mysoft> do you really need
+[19:30] <+Mysoft> single for the zoom?
+[19:30] <qwebirc23602> I dont know
+[19:30] <qwebirc23602> I dont think I do if I rescale my world environment
+[19:31] <+Mysoft> imo it should just be a scaled integer
+[19:31] <+Mysoft> instead of single
+[19:31] <+Mysoft> like 1 = 256
+[19:31] <qwebirc23602> Okay
+[19:31] <+Mysoft> that would optimize much better with -gen gcc
+[19:31] <+Mysoft> than using single
+[19:31] <+Mysoft> and since you are calling that
+[19:31] <+Mysoft> several times...
+[19:31] <+Mysoft> it will totally become the bottleneck
+[19:31] <+Mysoft> once we remove the "line" bottleneck
+[19:31] <qwebirc23602> I have a lot of stuff to rewrite
+[19:31] <qwebirc23602> phew
+[19:32] <qwebirc23602> I use several files Mysoft
+[19:32] <qwebirc23602> do you think thats okay
+[19:32] <qwebirc23602> like
+[19:32] <qwebirc23602> I have
+[19:32] <qwebirc23602> rect.bi
+[19:32] <qwebirc23602> and I put my struct in there
+[19:32] <+Mysoft> yes
+[19:32] <qwebirc23602> along with all functions that are used by struct
+[19:32] <+Mysoft> you #include them
+[19:32] <+Mysoft> waht?
+[19:32] <+Mysoft> dont put code on .bi
+[19:32] <qwebirc23602> well in C/C++
+[19:32] <qwebirc23602> I know
+[19:32] <qwebirc23602> listen though
+[19:32] <qwebirc23602> in C/C++
+[19:32] <qwebirc23602> I can just
+[19:32] <qwebirc23602> GCC *.cpp
+[19:32] <+Mysoft> yes
+[19:32] <qwebirc23602> and get my a.out
+[19:32] <+Mysoft> in freebasic you can as well
+[19:32] <qwebirc23602> I tried that in FB
+[19:32] <qwebirc23602> fbc *.bas
+[19:33] <qwebirc23602> didnt work well
+[19:33] <qwebirc23602> how does it know where the main entry point is anyway
+[19:33] <+Mysoft> you pass -m
+[19:33] <qwebirc23602> -m?
+[19:33] <qwebirc23602> ah
+[19:33] <qwebirc23602> so
+[19:33] <+Mysoft> fbc *.bas -m MainFile
+[19:33] <qwebirc23602> fbc *.bas -m main.bas
+[19:33] <+Mysoft> gcc is no different on that
+[19:33] <qwebirc23602> yeah?
+[19:34] <+Mysoft> but maybe gcc tried to auto guess
+[19:34] <qwebirc23602> well now I have more work to do I guess
+[19:34] <+Mysoft> because of the "main" function
+[19:34] <+Mysoft> but anyway
+[19:34] <qwebirc23602> I didnt know about that in gcc
+[19:34] <+Mysoft> you should avoid
+[19:34] <+Mysoft> using that if you can
+[19:34] <+Mysoft> the
+[19:34] <qwebirc23602> why
+[19:34] <+Mysoft> fbc *.bas
+[19:34] <qwebirc23602> why should I
+[19:34] <+Mysoft> because they will slowdown compilation
+[19:34] <+Mysoft> just
+[19:34] <+Mysoft> #include "file.bas"
+[19:34] <+Mysoft> inside your main file
+[19:34] <+Mysoft> and compile that
+[19:35] <+Mysoft> like you are already doing
+[19:35] <+Mysoft> except
+[19:35] <+Mysoft> keep code on .bas
+[19:35] <+Mysoft> not on .bi
+[19:35] <qwebirc23602> I used to do that but then someone called me a homosexual for doing that
+[19:35] <+Mysoft> yes other people are retarded
+[19:35] <qwebirc23602> I was told to only do #include .bi files
+[19:35] <+Mysoft> contrary to popular belief
+[19:35] <+Mysoft> doing that does not help
+[19:35] <+Mysoft> until your project becomes big
+[19:36] <qwebirc23602> #including .bas?
+[19:36] <+Mysoft> like >50k lines
+[19:36] <+Mysoft> using modules... does not help
+[19:36] <+Mysoft> ´
+[19:36] <qwebirc23602> do are you saying use a single file
+[19:36] <+Mysoft> yes
+[19:36] <+Mysoft> use a single file
+[19:36] <+Mysoft> with #include
+[19:36] <+Mysoft> that will have two benefits
+[19:36] <+Mysoft> one...
+[19:37] <+Mysoft> the .bi you include
+[19:37] <+Mysoft> will just be processed ONCE
+[19:37] <qwebirc23602> but ill have one massive file
+[19:37] <qwebirc23602> I wont be able to navigate it well
+[19:37] <+Mysoft> i didnt said to do one massive file
+[19:37] <+Mysoft> :P
+[19:37] <+Mysoft> i said to have several files
+[19:37] <qwebirc23602> oh
+[19:37] <+Mysoft> #include'd
+[19:37] <+Mysoft> on the main file
+[19:37] <qwebirc23602> Okay I have several files right now
+[19:37] <qwebirc23602> but theyre all .bi
+[19:37] <+Mysoft> yes
+[19:37] <+Mysoft> just make them .bas
+[19:37] <+Mysoft> and if you will have .bi
+[19:37] <+Mysoft> make them .bi
+[19:38] <qwebirc23602> shouldnt I keep my structs in the .bi
+[19:38] <+Mysoft> and include on the .bas
+[19:38] <+Mysoft> yup
+[19:38] <qwebirc23602> ok
+[19:38] <+Mysoft> it can be :)
+[19:38] <+Mysoft> just dont keep code on .bi
+[19:38] <qwebirc23602> yeah
+[19:38] <+Mysoft> because .bi are headers
+[19:38] <+Mysoft> even that in practice it does not make difference
+[19:38] <+Mysoft> it can be horrendous :P
+[19:38] <+Mysoft> also use
+[19:39] <+Mysoft> #include once ""
+[19:39] <qwebirc23602> I use #pragma once
+[19:39] <qwebirc23602> in my headers
+[19:39] <+Mysoft> ok
+[19:39] <+Mysoft> then you can #include the ".bi"
+[19:39] <+Mysoft> on all .bas
+[19:39] <+Mysoft> just like if you had modules
+[19:39] <+Mysoft> and then just #include them all on the main module
+[19:39] <+Mysoft> that way
+[19:39] <+Mysoft> its VERY easy
+[19:39] <qwebirc23602> so
+[19:39] <+Mysoft> when you decide to change from single module
+[19:39] <+Mysoft> to multiple modules
+[19:39] <qwebirc23602> just have a file dedicated to including everything?
+[19:40] <+Mysoft> yeah
+[19:40] <+Mysoft> so you basically do everything as if it would be multiple modules
+[19:40] <+Mysoft> but compile as if it was a single module
+[19:40] <+Mysoft> that will add some speed benefits when compiling
+[19:40] <+Mysoft> because stuff wont be analized multiple times
+[19:40] <+Mysoft> AND
+[19:41] <+Mysoft> it add some speed benefits
+[19:41] <+Mysoft> because C will now know how stuff is used
+[19:41] <+Mysoft> for example...
+[19:41] <+Mysoft> say you had a module
+[19:41] <+Mysoft> with just that function to draw a line
+[19:41] <+Mysoft> that will cause C to not be able to inline it
+[19:41] <+Mysoft> because the function definition is not on the same module
+[19:41] <+Mysoft> that its being used
+[19:42] <+Mysoft> also if you had a function that were using floats
+[19:42] <+Mysoft> i.e. single
+[19:42] <+Mysoft> and its one of the patterns that C understand
+[19:42] <+Mysoft> and optimize using integers
+[19:42] <+Mysoft> you will lose that optimization as well
+[19:42] <+Mysoft> because again...
+[19:42] <+Mysoft> the module that defined that
+[19:42] <+Mysoft> is unknown to the compiler
+[19:42] <+Mysoft> and a BUNCH OF STUFF LIKE THAT
+[19:43] <+Mysoft> so using modules... helps for huge projects
+[19:43] <qwebirc23602> so using modules would be me compiling with -m
+[19:43] <+Mysoft> yeah
+[19:43] <qwebirc23602> me not using modules would be me having a file dedicated to including everything
+[19:43] <+Mysoft> the *.bas -m
+[19:43] <+Mysoft> yep
+[19:43] <qwebirc23602> ok
+[19:43] <qwebirc23602> ill do that then
+[19:43] <qwebirc23602> what should i name it
+[19:43] <qwebirc23602> the file
+[19:43] <qwebirc23602> which includes
+[19:43] <+Mysoft> well
+[19:43] <+Mysoft> main.bas ?
+[19:43] <+Mysoft> :)
+[19:43] <qwebirc23602> oh
+[19:43] <qwebirc23602> i se
+[19:43] <qwebirc23602> I see*
+[19:44] <qwebirc23602> thats not what I had in mind but now I understand
+[19:44] <qwebirc23602> II thought you meant
+[19:44] <qwebirc23602> in my main.bas file
+[19:44] <qwebirc23602> #include "includer.bi"
+[19:44] <+Mysoft> well it would work as well
+[19:44] <+Mysoft> but i think having a main file dedicated
+[19:45] <+Mysoft> works very nicely
+[19:45] <+Mysoft> and its 100% compatible with compiling as modules
+[19:45] <qwebirc23602> yeah thats what ill do
+[19:45] <+Mysoft> so if your projects gets bigger
+[19:45] <+Mysoft> you are already ready to it :P
+[19:45] <+Mysoft> and btw...
+[19:45] <+Mysoft> i bet if you do it later...
+[19:45] <+Mysoft> when you change to modules
+[19:45] <+Mysoft> you may end NOTICING the speed difference
+[19:45] <+Mysoft> (as long you are compiling with -gen gcc that is)
+[19:45] <+Mysoft> :P
+[19:49] <qwebirc23602> slower speed right
+[19:49] <qwebirc23602> why would I want to use modules
+[19:49] <qwebirc23602> if I can just include it all in the header?
+[19:54] <+Mysoft> well
+[19:55] <+Mysoft> later if your project get bigger
+[19:55] <+Mysoft> say >50k
+[19:55] <+Mysoft> compiling may take "minutes"
+[19:55] <qwebirc23602> so i should use modules
+[19:55] <qwebirc23602> after a certain point
+[19:55] <+Mysoft> yes if the compile time become a problem
+[19:55] <+Mysoft> but
+[19:55] <qwebirc23602> okay
+[19:55] <+Mysoft> doing fbc *.bas -m
+[19:55] <+Mysoft> wont solve that problem :P
+[19:56] <qwebirc23602> but then you said gcc cant make things more efficient in the code
+[19:56] <+Mysoft> yes
+[19:56] <+Mysoft> you will have a tradeoff
+[19:56] <qwebirc23602> so my final release should not be using modules
+[19:56] <+Mysoft> yep :)
+[19:56] <qwebirc23602> got it
+[19:56] <+Mysoft> but as i'm saying
+[19:56] <+Mysoft> doing fbc *.bas -m
+[19:57] <+Mysoft> would not be faster to compile than the .h
+[19:57] <+Mysoft> the speed up of using modules
+[19:57] <+Mysoft> comes from ONLY recompiling the modules
+[19:57] <+Mysoft> that actually changed
+[19:57] <+Mysoft> so when you start actually needing modules you may need a compile file
+[19:58] <+Mysoft> *make file
+[19:58] <+Mysoft> to automatically detect what needs to be recompiled
+[19:58] <+Mysoft> but really
+[19:58] <+Mysoft> with the uber computers we have today
+[19:58] <+Mysoft> you may never reach that point :P
+[19:59] <+Mysoft> and if you want a hint
+[19:59] <+Mysoft> dont ever use boolean
+[20:00] <+Mysoft> as that forces you to use fbc 1.0.5
+[20:00] <+Mysoft> for a feature that is not really useful
+[20:00] <+Mysoft> since you should just use a integer
+[20:00] <+Mysoft> instead of a boolean
+[20:00] <+Mysoft> as what make something boolean is the check
+[20:00] <+Mysoft> and you have all that is required on the checks anyway
+[20:00] <+Mysoft> if x ...
+[20:00] <+Mysoft> if x=0 ...
+[20:00] <qwebirc23602> Mysoft
+[20:00] <qwebirc23602> what should I do
+[20:00] <+Mysoft> if not x ...
+[20:00] <qwebirc23602> https://pastebin.com/Vgd548Vg
+[20:00] <+Mysoft> is actually wrong :P
+[20:01] <+Mysoft> because "not" is bitwise
+[20:01] <+Mysoft> not logical
+[20:01] <+Mysoft> yeah
+[20:01] <+Mysoft> the macro for that
+[20:01] <+Mysoft> is good
+[20:01] <+Mysoft> but... i have a rule for consistency
+[20:01] <+Mysoft> when using macros
+[20:01] <+Mysoft> i keep the macros
+[20:02] <+Mysoft> CLOSE
+[20:02] <qwebirc23602> close to
+[20:02] <+Mysoft> to where they are used
+[20:02] <qwebirc23602> I see
+[20:02] <+Mysoft> so you dont have to go
+[20:02] <+Mysoft> back and forth
+[20:02] <qwebirc23602> Well that goes against my organizing methods
+[20:02] <+Mysoft> to know what the macro do
+[20:02] <qwebirc23602> this would be stored in my .bas file for a .bi struct
+[20:02] <qwebirc23602> my Dot struct
+[20:02] <qwebirc23602> dot.bi
+[20:02] <qwebirc23602> and dot.bas
+[20:02] <+Mysoft> yeah i understand
+[20:04] <qwebirc23602> https://pastebin.com/gEnJAWXx
+[20:04] <qwebirc23602> how about this stuff
+[20:04] <+Mysoft> but anyway
+[20:04] <+Mysoft> in  your macro
+[20:04] <qwebirc23602> this would be the constructor equivalent
+[20:04] <+Mysoft> don't forget to use
+[20:04] <+Mysoft> (x)
+[20:05] <qwebirc23602> (x)?
+[20:05] <+Mysoft> yes
+[20:05] <qwebirc23602> for what
+[20:05] <+Mysoft> consistency
+[20:05] <qwebirc23602> ??
+[20:05] <qwebirc23602> d->x = x
+[20:05] <+Mysoft> remember what i said about math order
+[20:05] <qwebirc23602> d->x = (x)
+[20:05] <qwebirc23602> ?
+[20:05] <+Mysoft> yes
+[20:05] <+Mysoft> also
+[20:05] <qwebirc23602> how does that make sense
+[20:05] <+Mysoft> you noticed something there?
+[20:05] <+Mysoft> x x
+[20:05] <qwebirc23602> its the only thing
+[20:05] <+Mysoft> this is not good in macros
+[20:05] <+Mysoft> hence why
+[20:05] <+Mysoft> i do
+[20:06] <qwebirc23602> #MACRO dot_setPos(_d, _x, _y)
+[20:06] <+Mysoft> yep
+[20:06] <+Mysoft> thats why i do the _d _x _y
+[20:06] <+Mysoft> to avoid name conflict
+[20:06] <+Mysoft> so
+[20:06] <+Mysoft> _d->x = (x)
+[20:06] <+Mysoft> and for consistency i ALWAYS put parameters
+[20:06] <+Mysoft> errr
+[20:06] <+Mysoft> ALWAYS put parenthesis
+[20:06] <+Mysoft> on the parameters from the macro
+[20:07] <+Mysoft> even when they dont need
+[20:07] <+Mysoft> in this case
+[20:07] <+Mysoft> even on the _d
+[20:07] <+Mysoft> it would be wise
+[20:07] <+Mysoft> (_d)->x = (x)
+[20:07] <qwebirc23602> so weird
+[20:07] <+Mysoft> even if its clear that it will be fine without
+[20:07] <qwebirc23602> would it be ok to use using _d
+[20:07] <+Mysoft> it avoid several kinds of problems
+[20:08] <qwebirc23602> or would i say using (_d)
+[20:08] <+Mysoft> so for consistency i always use the parenthesis
+[20:08] <+Mysoft> you dont need... but as you wish :)
+[20:09] <+Mysoft> because macros are just "text replacement"
+[20:09] <+Mysoft> so just like the ->x
+[20:09] <+Mysoft> that you have not noticed
+[20:09] <+Mysoft> there might be something
+[20:09] <qwebirc23602> okay
+[20:10] <+Mysoft> you may use that may end affecting
+[20:10] <+Mysoft> even with just = x
+[20:10] <+Mysoft> i can't think of any
+[20:10] <+Mysoft> but with macros i dont take chances :)
+[20:10] <qwebirc23602> Right ok
+[20:10] <qwebirc23602> Ill make that my doctrine now
+[20:10] <+Mysoft> you will see people saying that macros are evil
+[20:10] <qwebirc23602> are they evil?
+[20:10] <+Mysoft> so they would even recommend to never use them
+[20:10] <+Mysoft> they can be pretty evil
+[20:10] <qwebirc23602> got it
+[20:10] <+Mysoft> just like a chainsaw in a kid hand
+[20:10] <+Mysoft> :P
+[20:10] <qwebirc23602> Is that what youve done to me?
+[20:11] <qwebirc23602> Youve given me a chainsaw
+[20:11] <qwebirc23602> and now im going to ruin my entire project :P
+[20:11] <+Mysoft> xD
+[20:11] <+Mysoft> well you are just doing mild macro usage :)
+[20:11] <qwebirc23602> ok I have another macro question
+[20:11] <+Mysoft> but you see
+[20:11] <+Mysoft> even for the mild macro usage
+[20:11] <+Mysoft> you ended doing the ->
+[20:11] <+Mysoft> and ended doing the _d instead of (_d)
+[20:12] <+Mysoft> also...
+[20:12] <+Mysoft> heres another thing
+[20:12] <+Mysoft> to pull your hair
+[20:12] <+Mysoft> that you must REMEMBER
+[20:12] <qwebirc23602> p_p
+[20:12] <+Mysoft> -------
+[20:12] <+Mysoft> #macro MyMacro()
+[20:12] <+Mysoft>   print "Hello"
+[20:12] <+Mysoft>   print "World"
+[20:12] <+Mysoft> #endmacro
+[20:13] <+Mysoft> if 0 then MyMacro()
+[20:13] <+Mysoft> sleep
+[20:13] <+Mysoft> --------
+[20:13] <+Mysoft> run this code
+[20:13] <qwebirc23602> I think I see it from here
+[20:13] <qwebirc23602> itll print World
+[20:13] <qwebirc23602> right?
+[20:13] <+Mysoft> yes
+[20:13] <qwebirc23602> so
+[20:13] <qwebirc23602> that means
+[20:13] <qwebirc23602> I cant do that kind of stuff
+[20:14] <qwebirc23602> that would have really tripped me up actually
+[20:14] <qwebirc23602> if I had done that
+[20:14] <+Mysoft> yeah
+[20:14] <+Mysoft> so even if its ugly
+[20:14] <+Mysoft> if you want to avoid such stuff
+[20:14] <+Mysoft> you can do
+[20:14] <qwebirc23602> yeah
+[20:14] <+Mysoft> #define MyMacro() print "Hello": print "World"
+[20:14] <qwebirc23602> and thatll work?
+[20:14] <+Mysoft> yes
+[20:14] <qwebirc23602> with if(false) then
+[20:14] <+Mysoft> it wont print anything
+[20:14] <qwebirc23602> wow ok
+[20:15] <+Mysoft> yes as i said
+[20:15] <+Mysoft> macros are REALLY text replacement
+[20:15] <+Mysoft> so
+[20:15] <qwebirc23602> what if I did this
+[20:15] <qwebirc23602> https://pastebin.com/wz8i9Cs1
+[20:15] <+Mysoft> there's a ENTER after the print
+[20:15] <+Mysoft> it will paste that
+[20:15] <+Mysoft> in C...
+[20:15] <+Mysoft> you would not have such problem
+[20:15] <+Mysoft> because C uses ;
+[20:15] <+Mysoft> for line end
+[20:15] <qwebirc23602> true
+[20:15] <+Mysoft> but
+[20:15] <+Mysoft> only if you do
+[20:16] <+Mysoft> if 0 { MyMacro() }
+[20:16] <+Mysoft> if you do
+[20:16] <+Mysoft> if 0 MyMacro()
+[20:16] <+Mysoft> you are subject to the same thing :P
+[20:16] <+Mysoft> actually C requires parenthesis
+[20:16] <qwebirc23602> ?
+[20:16] <+Mysoft> so
+[20:16] <qwebirc23602> { }?
+[20:16] <+Mysoft> yes
+[20:16] <+Mysoft> in C
+[20:16] <+Mysoft> :)
+[20:16] <+Mysoft> i never use if's without { }
+[20:16] <qwebirc23602> oh
+[20:16] <qwebirc23602> in C
+[20:16] <+Mysoft> yes
+[20:16] <qwebirc23602> I thought you meant FB for a moment
+[20:16] <+Mysoft> i just said that in C
+[20:16] <qwebirc23602> i missed
+[20:16] <qwebirc23602> \o/
+[20:16] <+Mysoft> you wouldnt have problems with the multiline macro
+[20:17] <+Mysoft> ironically
+[20:17] <+Mysoft> C does not have
+[20:17] <+Mysoft> a multiline macro
+[20:17] <+Mysoft> xD
+[20:17] <qwebirc23602> Okay
+[20:17] <+Mysoft> but actually
+[20:17] <qwebirc23602> https://pastebin.com/wz8i9Cs1
+[20:17] <+Mysoft> let me try something that i never did before
+[20:18] <qwebirc23602> :_ works
+[20:18] <qwebirc23602> what are you trying
+[20:19] <+Mysoft> #define MyMacro() _
+[20:19] <+Mysoft>   print "Hello"  :_
+[20:19] <+Mysoft>   print "World"
+[20:19] <+Mysoft> '
+[20:19] <+Mysoft> if 0 then MyMacro()
+[20:19] <+Mysoft> sleep
+[20:19] <+Mysoft> :P
+[20:19] <+Mysoft> thats what i tried
+[20:19] <qwebirc23602> I just tried that
+[20:19] <qwebirc23602> yeah
+[20:19] <qwebirc23602> its neat
+[20:19] <+Mysoft> indeed we did tried the same thing
+[20:19] <+Mysoft> xD
+[20:19] <+Mysoft> its a bit ugly
+[20:19] <+Mysoft> but probabily less ugly
+[20:19] <+Mysoft> then the huge line
+[20:19] <+Mysoft> even on the macro
+[20:19] <+Mysoft> xD
+[20:19] <qwebirc23602> its less ugly than one large line
+[20:20] <+Mysoft> so yeah
+[20:20] <qwebirc23602> type Pnt
+[20:20] <qwebirc23602>     as integer x
+[20:20] <qwebirc23602>     as integer y
+[20:20] <qwebirc23602> end type
+[20:20] <qwebirc23602> dim as Pnt p = type<Pnt>(5,2)
+[20:20] <qwebirc23602> print p.x
+[20:20] <qwebirc23602> print p.y
+[20:20] <qwebirc23602> sleep()
+[20:20] <qwebirc23602> is this acceptable
+[20:20] <+Mysoft> yes and no
+[20:20] <qwebirc23602> why and why
+[20:20] <+Mysoft> you would either do
+[20:20] <+Mysoft> var p = type<Pnt>(5,2)
+[20:20] <+Mysoft> or...
+[20:21] <qwebirc23602> but why would I use var
+[20:21] <+Mysoft> dim as Pnt p = (5,2)
+[20:21] <+Mysoft> ---
+[20:21] <qwebirc23602> why var!?
+[20:21] <qwebirc23602> I hate var
+[20:21] <+Mysoft> i just said
+[20:21] <+Mysoft> that they are two ways of doing it
+[20:21] <+Mysoft> :P
+[20:21] <qwebirc23602> but I just did it in a way that used both your ways
+[20:21] <+Mysoft> yes
+[20:21] <qwebirc23602> so third way?
+[20:21] <+Mysoft> and it becomes ambiguous
+[20:21] <qwebirc23602> lol why would I need to use var
+[20:21] <qwebirc23602> I know its a Pnt
+[20:22] <+Mysoft> so
+[20:22] <+Mysoft> then
+[20:22] <+Mysoft> dim as Pnt p = (5,2)
+[20:22] <+Mysoft> no need to the type<pnt> AGAIN
+[20:22] <qwebirc23602> I see
+[20:22] <+Mysoft> since as you said
+[20:22] <+Mysoft> you already know you its a Pnt :)
+[20:22] <qwebirc23602> I added a third variable
+[20:22] <qwebirc23602> which is a string
+[20:22] <qwebirc23602> dim as Pnt p = (5,2,"ok")
+[20:22] <qwebirc23602> this doesnt work now
+[20:23] <qwebirc23602> as zstring ptr ok
+[20:23] <qwebirc23602> dim as Pnt p = (5,2,@"ok")
+[20:23] <qwebirc23602> print *p.ok
+[20:23] <qwebirc23602> that works
+[20:23] <+Mysoft> yeah
+[20:23] <+Mysoft> zstring*x
+[20:23] <+Mysoft> would also work
+[20:24] <qwebirc23602> *x ?
+[20:24] <qwebirc23602> whats the x for
+[20:24] <qwebirc23602> length?
+[20:24] <+Mysoft> yes
+[20:24] <qwebirc23602> dim as Pnt p = (5,2,@"ok")
+[20:24] <qwebirc23602> should the ok be null terminated
+[20:24] <+Mysoft> type Pnt
+[20:24] <+Mysoft>   x as integer
+[20:24] <+Mysoft>   y as integer
+[20:24] <+Mysoft>   z as zstring*8
+[20:24] <+Mysoft> end type
+[20:24] <qwebirc23602> dim as Pnt p = (5,2,@!"ok\0")
+[20:24] <+Mysoft> (5,2,"ok")
+[20:24] <+Mysoft> the \0 is redundant
+[20:24] <+Mysoft> its already zero terminated
+[20:24] <qwebirc23602> FB takes care of null terminators already?
+[20:24] <+Mysoft> yes
+[20:24] <qwebirc23602> ok
+[20:25] <+Mysoft> also
+[20:25] <+Mysoft> the "ok"
+[20:25] <+Mysoft> suprised me...
+[20:25] <+Mysoft> its probabily a freebasic bug
+[20:25] <+Mysoft> it should accept that
+[20:25] <qwebirc23602> why
+[20:25] <+Mysoft> because its a local
+[20:25] <+Mysoft> for example
+[20:25] <+Mysoft> dim shared as string = "Hello World"
+[20:25] <+Mysoft> is not accepted by freebasic
+[20:25] <qwebirc23602> yeah I recall
+[20:25] <+Mysoft> because "string" is a dynamic datatype
+[20:25] <+Mysoft> with a header
+[20:25] <+Mysoft> just like a dynamic array
+[20:25] <+Mysoft> so you can't have that initialized
+[20:26] <+Mysoft> and even that freebasic could store
+[20:26] <+Mysoft> the string descriptor
+[20:26] <qwebirc23602> *p.ok = "hello"
+[20:26] <qwebirc23602> print *p.ok
+[20:26] <+Mysoft> on the .data
+[20:26] <qwebirc23602> I just overwrote my "ok"
+[20:26] <qwebirc23602> do I need to delete[] it?
+[20:26] <qwebirc23602> or clean it up
+[20:26] <qwebirc23602> before overwriting it?
+[20:26] <+Mysoft> ok is a string?
+[20:26] <+Mysoft> of zstring?
+[20:26] <qwebirc23602> zstring ptr
+[20:27] <qwebirc23602> https://pastebin.com/kGa1svkm
+[20:27] <+Mysoft> ok
+[20:27] <+Mysoft> then its fine
+[20:27] <qwebirc23602> it cleans up automatically?
+[20:27] <+Mysoft> well
+[20:27] <+Mysoft> it never cleans actually
+[20:27] <+Mysoft> but thats fine
+[20:27] <qwebirc23602> so I need to clean it?
+[20:27] <+Mysoft> because they are constants
+[20:27] <qwebirc23602> oh uh
+[20:27] <+Mysoft> you can't clean constants
+[20:27] <qwebirc23602> ah
+[20:27] <qwebirc23602> trye
+[20:27] <qwebirc23602> true
+[20:27] <+Mysoft> but if it was a string
+[20:27] <+Mysoft> generated with allocate
+[20:27] <+Mysoft> or whatever
+[20:28] <+Mysoft> then you would leak that pointer
+[20:28] <+Mysoft> if you just change it
+[20:28] <qwebirc23602> so like
+[20:28] <qwebirc23602> if I asked for someone's username
+[20:28] <qwebirc23602> for a login application
+[20:28] <qwebirc23602> the user would generate the data
+[20:28] <qwebirc23602> and its not a constant anymore
+[20:28] <qwebirc23602> so I need to handle cleaning up
+[20:28] <qwebirc23602> that data right
+[20:28] <+Mysoft> yeah
+[20:28] <qwebirc23602> got it
+[20:28] <+Mysoft> but you will do that naturally
+[20:28] <+Mysoft> because the "method you use to input"
+[20:28] <+Mysoft> would use a temporary buffer
+[20:29] <+Mysoft> so you wont just set the buffer
+[20:29] <+Mysoft> on the structure
+[20:29] <+Mysoft> you would need to clone the string
+[20:29] <+Mysoft> before saving on the struct
+[20:29] <+Mysoft> OR
+[20:29] <+Mysoft> you would reserve the storage space on the struct
+[20:29] <+Mysoft> with zstring*x
+[20:29] <qwebirc23602> got it
+[20:29] <+Mysoft> then just setting would copy the zstring to the struct
+[20:29] <+Mysoft> instead of just having a pointer for it
+[20:29] <+Mysoft> and for STRING
+[20:30] <qwebirc23602> as zstring*5 ok
+[20:30] <+Mysoft> then the thing is handled by freebasic
+[20:30] <qwebirc23602> this still stores a null terminator huh
+[20:30] <qwebirc23602> even though I told it 5 bytes
+[20:30] <+Mysoft> yeah
+[20:30] <qwebirc23602> ok
+[20:30] <+Mysoft> BUT
+[20:30] <qwebirc23602> i tried to print "Hello"
+[20:30] <qwebirc23602> it printed "Hell"
+[20:30] <+Mysoft> freebasic knows its 5 bytes
+[20:30] <+Mysoft> (the maximum size)
+[20:30] <+Mysoft> so if you have
+[20:30] <+Mysoft> dim as string*5 zTemp
+[20:30] <+Mysoft> zTemp = "Hello"
+[20:30] <+Mysoft> print zTemp
+[20:31] <qwebirc23602> 'Hell'
+[20:31] <+Mysoft> no
+[20:31] <+Mysoft> you actually get Hello
+[20:31] <qwebirc23602> o ok
+[20:31] <+Mysoft> because zstring*5
+[20:32] <+Mysoft> is actually 6 bytes
+[20:32] <+Mysoft> you can see it with
+[20:32] <+Mysoft> [21:30] <Mysoft> dim as string*5 zTemp
+[20:32] <+Mysoft> print sizeof(zTemp)
+[20:32] <+Mysoft> but then yes
+[20:32] <+Mysoft> if you had
+[20:32] <+Mysoft> zstring*4
+[20:32] <+Mysoft> and you did
+[20:32] <+Mysoft> zTemp = "Hello"
+[20:32] <qwebirc23602> why is string*x and zstring*x different
+[20:32] <+Mysoft> then you would get Hell
+[20:32] <+Mysoft> ok
+[20:32] <+Mysoft> string*x is a leftover from qbasic
+[20:32] <+Mysoft> it should be avoided
+[20:33] <qwebirc23602> got it
+[20:33] <+Mysoft> it can be used... but its usefulness
+[20:33] <+Mysoft> is limited
+[20:33] <+Mysoft> most people that use it
+[20:33] <+Mysoft> were because they used it on qbasic
+[20:33] <+Mysoft> and on qbasic
+[20:33] <+Mysoft> string*1
+[20:33] <+Mysoft> was actually a single byte
+[20:33] <+Mysoft> while on freebasic
+[20:33] <+Mysoft> its 2 types...
+[20:33] <+Mysoft> *2 bytes
+[20:33] <+Mysoft> just like zstring*x
+[20:33] <+Mysoft> but...
+[20:33] <+Mysoft> string*n
+[20:34] <+Mysoft> have a side effect
+[20:34] <+Mysoft> well HAD a side effect
+[20:34] <+Mysoft> on QBASIC...
+[20:34] <+Mysoft> string*n was a FIXED LENGTH STRING
+[20:34] <+Mysoft> period :P
+[20:34] <+Mysoft> so
+[20:34] <+Mysoft> if you had
+[20:34] <+Mysoft> dim s as string*8
+[20:34] <+Mysoft> and you did
+[20:34] <+Mysoft> s = "Hello"
+[20:35] <+Mysoft> print "["+s+"]"
+[20:35] <+Mysoft> you would see
+[20:35] <+Mysoft> [Hello___]
+[20:35] <+Mysoft> where the _ are spaces :)
+[20:35] <+Mysoft> freebasic changed that...
+[20:35] <+Mysoft> so all in all
+[20:35] <+Mysoft> string*x does not have any benefit
+[20:35] <qwebirc23602> interesting
+[20:35] <+Mysoft> over zstring*x
+[20:36] <qwebirc23602> is this acceptable?
+[20:36] <qwebirc23602> #MACRO createPnt(_x,_y) type<Pnt>((_x),(_y)) #ENDMACRO
+[20:36] <qwebirc23602> just curious
+[20:36] <qwebirc23602> I dont intend on using it
+[20:36] <qwebirc23602> am just wondering if thats okay
+[20:36] <+Mysoft> well
+[20:36] <+Mysoft> it is... i guess
+[20:36] <+Mysoft> BUT
+[20:36] <+Mysoft> i just say it is because remember
+[20:36] <+Mysoft> i keep macro definitions
+[20:36] <+Mysoft> close to where i use them
+[20:36] <+Mysoft> :P
+[20:36] <qwebirc23602> right
+[20:37] <+Mysoft> in your case
+[20:37] <+Mysoft> you would use that
+[20:37] <+Mysoft> with it defined elsewhere
+[20:37] <+Mysoft> so it ends on the "meh" side
+[20:37] <+Mysoft> :P
+[20:37] <+Mysoft> as you need to learn a different language
+[20:37] <+Mysoft> to be able to understand your code
+[20:37] <+Mysoft> heheh
+[20:37] <+Mysoft> so i'm little biased against that
+[20:37] <+Mysoft> for pratical purposes
+[20:38] <+Mysoft> but i'm also not harsh on people that use that
+[20:38] <+Mysoft> but keep in mind
+[20:38] <+Mysoft> overusage of macros...
+[20:38] <+Mysoft> can lead to some problems of OOP
+[20:38] <+Mysoft> where you may not see optimizations
+[20:38] <+Mysoft> because you tuned the code
+[20:38] <+Mysoft> to use the macros
+[20:38] <+Mysoft> instead of write stuff in a different way
+[20:38] <+Mysoft> :P
+[20:38] <+Mysoft> when the opportunity comes
+[20:38] <+Mysoft> so... if you get addicted to that
+[20:38] <+Mysoft> it may be bad
+[20:41] <qwebirc23602> stance on using overloads?
+[20:41] <qwebirc23602> I want a function `toString(???)`
+[20:41] <qwebirc23602> which I can pass any of my custom structs
+[20:41] <qwebirc23602> and itll output information in the format of a string
+[20:42] <+Mysoft> nooooooooooo
+[20:42] <+Mysoft> :P
+[20:42] <qwebirc23602> no overloads? :(
+[20:42] <+Mysoft> anyway the way you are doing its fine
+[20:42] <+Mysoft> :P
+[20:42] <qwebirc23602> https://pastebin.com/68qKUqZH
+[20:42] <+Mysoft> my noooo was because the chilly nilly
+[20:42] <qwebirc23602> should i use macros for this too
+[20:42] <+Mysoft> of reading javascript
+[20:42] <+Mysoft> :P
+[20:43] <+Mysoft> you even used
+[20:43] <+Mysoft> toString()
+[20:43] <+Mysoft> like js
+[20:43] <+Mysoft> :P
+[20:43] <qwebirc23602> oh?
+[20:43] <qwebirc23602> how so?
+[20:43] <qwebirc23602> isnt toString a method
+[20:43] <qwebirc23602> of datatypes
+[20:43] <+Mysoft> exactly
+[20:43] <+Mysoft> its a javascript (maybe java thing)
+[20:43] <+Mysoft> its an OOP thing
+[20:43] <+Mysoft> you are not using it as OOP
+[20:43] <+Mysoft> but
+[20:43] <+Mysoft> you even use the name
+[20:43] <+Mysoft> with the js casing
+[20:43] <+Mysoft> lowerCamelCase
+[20:43] <+Mysoft> :P
+[20:44] <+Mysoft> so it gave me chills
+[20:44] <+Mysoft> xD
+[20:44] <+Mysoft> i.e.
+[20:44] <+Mysoft> ToString vs toString
+[20:44] <+Mysoft> :P
+[20:44] <qwebirc23602> I dont think how I named it matters
+[20:44] <+Mysoft> i know
+[20:44] <+Mysoft> i just said
+[20:44] <qwebirc23602> what matters is efficiency
+[20:44] <+Mysoft> that reading the toString
+[20:44] <qwebirc23602> Yeah
+[20:44] <+Mysoft> gave me chills
+[20:44] <qwebirc23602> Alright
+[20:44] <+Mysoft> because i did remember of JS
+[20:44] <+Mysoft> xD
+[20:44] <qwebirc23602> its in .Net too
+[20:44] <qwebirc23602> and Java
+[20:45] <+Mysoft> thanks for the extra nightmare
+[20:45] <qwebirc23602> I think even MySQL OOP version has toString too
+[20:45] <qwebirc23602> it's a valid name
+[20:45] <qwebirc23602> it turns thing into strings...
+[20:45] <+Mysoft> yeah anyway
+[20:45] <+Mysoft> good thing i'm very far from such crap
+[20:45] <+Mysoft> but ok
+[20:45] <+Mysoft> overload
+[20:45] <+Mysoft> is kinda fine the way you did
+[20:45] <qwebirc23602> ok
+[20:45] <+Mysoft> i would just ask
+[20:45] <+Mysoft> to not export such thing in a dll
+[20:45] <qwebirc23602> I didnt intend to
+[20:45] <+Mysoft> because if you do
+[20:45] <qwebirc23602> why would i
+[20:45] <+Mysoft> you will see it will be named
+[20:46] <+Mysoft> ToString@#U&*(@JUOISJCNKLSADJIKO@#( *($QWOIHDASIOH@ )
+[20:46] <+Mysoft> :P
+[20:46] <qwebirc23602> I believe ive had this issue before
+[20:46] <+Mysoft> because of the name mangling :P
+[20:46] <+Mysoft> since overloads add the type that is being overloaded
+[20:46] <+Mysoft> as part of the name
+[20:46] <qwebirc23602> Righto
+[20:46] <+Mysoft> and its something that i find to be
+[20:46] <+Mysoft> a terrible practice among C++ coders
+[20:46] <+Mysoft> to export things with name mangling
+[20:46] <qwebirc23602> is concat'ing like this ok in FB?
+[20:46] <qwebirc23602> "(" & p->x & "," & p->y & ")"
+[20:47] <+Mysoft> yes
+[20:47] <+Mysoft> but
+[20:47] <+Mysoft> imo you should use sprintf
+[20:47] <qwebirc23602> I use this function often
+[20:47] <qwebirc23602> Yeah I made a subroutine called
+[20:47] <qwebirc23602> echo
+[20:47] <qwebirc23602> which uses printf
+[20:47] <+Mysoft> because
+[20:47] <qwebirc23602> because it goes to the console
+[20:47] <qwebirc23602> instead of the graphics
+[20:47] <qwebirc23602> which I like
+[20:47] <qwebirc23602> for debugging
+[20:47] <+Mysoft> sprintf( "(%i,%i)", p->x , p->y )
+[20:47] <+Mysoft> is much more sane :P
+[20:47] <qwebirc23602> oh
+[20:47] <+Mysoft> but yes
+[20:48] <qwebirc23602> thatll return a string
+[20:48] <qwebirc23602> ?
+[20:48] <+Mysoft> well
+[20:48] <qwebirc23602> the main thing is that it has to return a string
+[20:48] <+Mysoft> sprintf( zstring , "(%i,%i)", p->x , p->y )
+[20:48] <qwebirc23602> hm
+[20:48] <+Mysoft> it will FILL that on a string
+[20:48] <+Mysoft> as its a C thing
+[20:48] <qwebirc23602> itll add a null terminator?
+[20:48] <+Mysoft> it wont work with strings
+[20:48] <+Mysoft> yes
+[20:48] <+Mysoft> and it returns the number of bytes
+[20:48] <+Mysoft> generated
+[20:48] <+Mysoft> so you know the resulting length
+[20:49] <+Mysoft> its very useful for appending :)
+[20:49] <+Mysoft> but its the C style
+[20:49] <+Mysoft> so no "strings" there
+[20:49] <+Mysoft> actually i avoid returning strings on freebasic
+[20:49] <+Mysoft> because i dont like the allocation
+[20:49] <+Mysoft> that happens there
+[20:49] <+Mysoft> i normally would do this
+[20:50] <qwebirc23602> how do I convert a zstring to string
+[20:50] <qwebirc23602> zstring ptr*
+[20:50] <+Mysoft> function GetName( iIndexOrWhatever as integer , sOutputString as string ) as integer
+[20:50] <+Mysoft> i would normally do this
+[20:50] <+Mysoft> and so it would return the string
+[20:50] <+Mysoft> trough the parameter passed to it
+[20:50] <+Mysoft> (as strings are passed byref)
+[20:50] <+Mysoft> so the function would set the sOutputString directly
+[20:51] <+Mysoft> instead of making a new string
+[20:51] <+Mysoft> with the result
+[20:51] <+Mysoft> that has the allocate cost
+[20:51] <+Mysoft> *zstringptr
+[20:51] <+Mysoft> will turn it into a string
+[20:52] <qwebirc23602> https://pastebin.com/1nk9gBnm
+[20:52] <qwebirc23602> im having issues
+[20:53] <qwebirc23602> dim as pnt p = (5,2)
+[20:53] <qwebirc23602> **
+[20:53] <qwebirc23602> Force of habit
+[20:54] <+Mysoft> well
+[20:54] <+Mysoft> structs are already passed byref
+[20:54] <+Mysoft> so the @
+[20:54] <+Mysoft> is not required
+[20:54] <+Mysoft> neither is the "pnt ptr"
+[20:54] <+Mysoft> but on the other hand
+[20:54] <+Mysoft> if you are using "new"
+[20:54] <+Mysoft> to allocate the quads
+[20:54] <+Mysoft> then you already have a pointer
+[20:54] <+Mysoft> and if it was
+[20:54] <+Mysoft> just as
+[20:55] <+Mysoft> pnt
+[20:55] <+Mysoft> then you will need to pass *p
+[20:55] <+Mysoft> so... whatever :P
+[20:55] <+Mysoft> both ways have theirs pro/cons
+[20:56] <qwebirc23602> I do use new
+[20:56] <qwebirc23602> Id like to keep them as pointers
+[20:56] <+Mysoft> yeah
+[20:56] <+Mysoft> using pointers
+[20:56] <+Mysoft> for such small structures
+[20:56] <+Mysoft> is a huge overhead
+[20:56] <+Mysoft> you know
+[20:56] <qwebirc23602> well I keep them in a list
+[20:56] <+Mysoft> each of these new
+[20:56] == Agamemnus [~Agamemnus@pool-108-26-248-68.bstnma.fios.verizon.net] has joined ##freebasic
+[20:56] == mode/##freebasic [+v Agamemnus] by ChanServ
+[20:56] <+Mysoft> take 16 bytes of memory?
+[20:56] <+Mysoft> for the "allocation" header
+[20:57] <+Mysoft> plus the 4 bytes for the pointer itself
+[20:57] <+Mysoft> (double that on 64bit)
+[20:57] <qwebirc23602> interesting
+[20:57] <+Mysoft> so having them on an array
+[20:57] <+Mysoft> and just passing the index around
+[20:57] <+Mysoft> is potentially better
+[20:57] <qwebirc23602> so are you saying
+[20:57] <qwebirc23602> fill an array of just empty variables
+[20:58] <qwebirc23602> and keep track of what has been initialized and what hasnt
+[20:58] <+Mysoft> maybe
+[20:58] <+Mysoft> but
+[20:58] <+Mysoft> in your model
+[20:58] <+Mysoft> you never delete
+[20:58] <+Mysoft> so...
+[20:58] <+Mysoft> you know what is initialized
+[20:58] <qwebirc23602> What do I not delete?
+[20:58] <+Mysoft> just by having a COUNT
+[20:58] <+Mysoft> the quads...
+[20:58] <qwebirc23602> when a troop dies he is deleted
+[20:58] <+Mysoft> ok
+[20:58] <qwebirc23602> or I just
+[20:58] <qwebirc23602> ignore his index
+[20:59] <qwebirc23602> but
+[20:59] <qwebirc23602> i do want to recycle
+[20:59] <+Mysoft> yeah
+[20:59] <qwebirc23602> spaces
+[20:59] <+Mysoft> so having a bit or byte
+[20:59] <+Mysoft> with flags for the troop
+[20:59] <+Mysoft> one of them being if its there or not
+[20:59] <+Mysoft> or...
+[20:59] <+Mysoft> reusing its X/Y
+[20:59] <+Mysoft> like
+[20:59] <qwebirc23602> a union?
+[20:59] <+Mysoft> X = 0
+[20:59] <+Mysoft> meaning its not there
+[20:59] <+Mysoft> could be also used
+[20:59] <qwebirc23602> right
+[20:59] <+Mysoft> altough X being 0
+[21:00] <+Mysoft> could be a valid position
+[21:00] <qwebirc23602> theyre integers
+[21:00] <qwebirc23602> so -1
+[21:00] <+Mysoft> yeah either that or an extra bit
+[21:00] <+Mysoft> since you will probabily have a bitfield
+[21:00] <+Mysoft> for the states
+[21:00] <qwebirc23602> yeah
+[21:00] <qwebirc23602> I will
+[21:00] <+Mysoft> so having just one extra bit there is fine
+[21:00] <+Mysoft> and gen gcc optimizes that very well
+[21:01] <+Mysoft> (single bit checks)
+[21:01] <+Mysoft> :)
+[21:01] <+Mysoft> but yeah
+[21:01] <+Mysoft> having a circular array
+[21:01] <+Mysoft> with max number of units
+[21:01] <+Mysoft> could be useful to recycle them
+[21:01] <+Mysoft> and can be potentially faster
+[21:02] <+Mysoft> than using new/delete
+[21:02] <+Mysoft> specially since that could be a static global
+[21:02] <+Mysoft> but if the contrast is too big
+[21:03] <+Mysoft> that having a static global would waste space
+[21:03] <+Mysoft> then a dynamic allocated arrays would be my second guess
+[21:03] <+Mysoft> but if the goal is to speed up
+[21:03] <+Mysoft> i would have one static array per CLASS
+[21:03] <+Mysoft> CLASS = type of unit
+[21:04] <+Mysoft> so one array for all the pawns
+[21:04] <+Mysoft> one array for all the bishops
+[21:04] <+Mysoft> one array for all the knights
+[21:04] <+Mysoft> and so on
+[21:04] <+Mysoft> so that way you may end with smaller arrays
+[21:05] <+Mysoft> and faster to search (or not)
+[21:05] <+Mysoft> it depends on too much thing
+[21:05] <+Mysoft> so... whatever :)
+[21:05] <+Mysoft> just saying... that the "new/delete" is the generic way
+[21:05] <+Mysoft> but you for sure always have a targeted way
+[21:05] <+Mysoft> that can potentially speed up something
+[21:06] <+Mysoft> even a double linked list on the array
+[21:07] <+Mysoft> which would incur two extra elements
+[21:07] <+Mysoft> for previous/next
+[21:07] <+Mysoft> that way its faster to locate "holes"
+[21:07] <+Mysoft> but really
+[21:07] <+Mysoft> imo the best way to recycle
+[21:07] <+Mysoft> is swap :)
+[21:07] <+Mysoft> for example...
+[21:08] <+Mysoft> when you ADD an unit... you add it to the last position
+[21:08] <+Mysoft> and when you remove
+[21:08] <+Mysoft> you put what was on the end of the list
+[21:08] <+Mysoft> into the hole you created
+[21:08] <+Mysoft> but... that only works
+[21:08] <+Mysoft> if you dont have references to the units elsewhere
+[21:08] <+Mysoft> as you would need to update all the references to it
+[21:08] <+Mysoft> to keep this list without holes
+[21:09] <+Mysoft> but...
+[21:09] <+Mysoft> since add/new may not be a bottleneck
+[21:10] <+Mysoft> you have to actually see what is your bottleneck before deciding
+[21:10] <+Mysoft> what you do most...
+[21:10] <+Mysoft> you would SEARCH for a unit...
+[21:10] <+Mysoft> you would ACCESS it most often
+[21:10] <+Mysoft> or you would ADD/REMOVE most often
+[21:10] <+Mysoft> so the overhead of "updating" dependencies when a unit is deleted
+[21:10] <+Mysoft> may be small enough to make up even for the cost of "delete"
+[21:11] <+Mysoft> anyway talked too much xD
+[21:21] <qwebirc23602> All good information
+[21:31] == Thedarkb-X40 [~beno@51-171-49-156-dynamic.agg3.kny.prp-wtd.eircom.net] has joined ##freebasic
