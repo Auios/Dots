@@ -7,17 +7,17 @@ type Rect
     as Pnt size
 end type
 
-declare function createRect(x as integer, y as integer, w as integer, h as integer) as Rect
-declare function rectGetNW(r as Rect ptr) as Rect
-declare function rectGetNE(r as Rect ptr) as Rect
-declare function rectGetSW(r as Rect ptr) as Rect
-declare function rectGetSE(r as Rect ptr) as Rect
+declare function rect_create(x as integer, y as integer, w as integer, h as integer) as Rect
+declare function rect_getNW(r as Rect ptr) as Rect
+declare function rect_getNE(r as Rect ptr) as Rect
+declare function rect_getSW(r as Rect ptr) as Rect
+declare function rect_getSE(r as Rect ptr) as Rect
 'declare sub setRect(r as Rect ptr, x as integer, y as integer, w as integer, h as integer)
-declare sub offsetRect(r as Rect ptr, dx as integer, dy as integer)
-declare function rectIntersects(r1 as Rect ptr, r2 as Rect ptr) as boolean
-declare function rectContains(r as Rect ptr, p as Pnt ptr) as boolean
+declare sub rect_offset(r as Rect ptr, dx as integer, dy as integer)
+declare function rect_intersects(r1 as Rect ptr, r2 as Rect ptr) as boolean
+declare function rect_contains(r as Rect ptr, p as Pnt ptr) as boolean
 declare function toString overload(r as Rect ptr) as string
 
-#MACRO setRect(_r, _x, _y, _w, _h)
+#MACRO rect_set(_r, _x, _y, _w, _h)
 setPnt((_r)->position,(_x),(_y)):setPnt((_r)->size,(_w),(_h))
 #ENDMACRO

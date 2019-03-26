@@ -10,9 +10,9 @@ type Form
     as integer currentLine
 end type
 
-declare function createForm(x as integer, y as integer, w as integer,_
+declare function form_create(x as integer, y as integer, w as integer,_
     h as integer,bckClr as uinteger = rgb(200, 200, 200), borClr as uinteger = rgb(100, 100, 100), txtClr as uinteger = rgb(100, 100, 100)) as Form
-declare sub setFormPosition(f as Form ptr, x as integer, y as integer)
-declare sub setFormSize(f as Form ptr, w as integer, h as integer)
-declare sub renderForm(f as Form ptr)
-declare sub fPrint(f as Form ptr, txt as string)
+declare sub form_setPosition(f as Form ptr, x as integer, y as integer)
+declare sub form_setSize(f as Form ptr, w as integer, h as integer)
+declare sub form_render(f as Form ptr)
+declare sub form_print(f as Form ptr, txt as string)

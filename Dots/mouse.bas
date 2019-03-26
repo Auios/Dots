@@ -1,6 +1,6 @@
 #include "mouse.bi"
 
-sub updateMouse(m as Mouse ptr)
+sub mouse_update(m as Mouse ptr)
     with *m
         dim as long px = .x
         dim as long py = .y

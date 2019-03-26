@@ -14,4 +14,4 @@ type Mouse
     as long clip
 end type
 
-declare sub updateMouse(m as Mouse ptr)
+declare sub mouse_update(m as Mouse ptr)

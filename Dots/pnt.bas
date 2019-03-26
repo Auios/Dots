@@ -1,8 +1,7 @@
 #include "pnt.bi"
-
 #include "crt/stdio.bi"
 
-function createPnt(x as integer, y as integer) as Pnt
+function pnt_create(x as integer, y as integer) as Pnt
     return type<Pnt>(x,y)
 end function
 
@@ -11,7 +10,7 @@ end function
 '    p->y = y
 'end sub
 
-sub offsetPnt(p as Pnt ptr, dx as integer, dy as integer)
+sub pnt_offset(p as Pnt ptr, dx as integer, dy as integer)
     p->x+=dx
     p->y+=dy
 end sub

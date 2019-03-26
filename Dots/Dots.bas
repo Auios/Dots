@@ -67,7 +67,7 @@ end sub
 function spamDots(qt as QuadTree ptr, count as integer, x as integer = 0, y as integer = 0, w as integer = 0, h as integer = 0) as integer
     dim as integer added
     for i as integer = 0 to count-1
-        added+=qt_insert(qt, qtn_create(createPnt(iif(w,w*rnd()+x,x),iif(h,h*rnd()+y,y)),0))
+        added+=qt_insert(qt, qtn_create(pnt_create(iif(w,w*rnd()+x,x),iif(h,h*rnd()+y,y)),0))
     next i
     return added
 end function
@@ -78,16 +78,16 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     
     displayInstructions()
     
-    dim as QuadTree qt = qt_create(createRect(0, 0, QT_SIZE, QT_SIZE), QT_CAP, 0)
+    dim as QuadTree qt = qt_create(rect_create(0, 0, QT_SIZE, QT_SIZE), QT_CAP, 0)
     dim as QuadTree ptr qt_dbg = @qt
     dim as QTresult searchResults
     dim as integer globalCount = 0
     dim as integer oldWheel
     dim as integer zoom = 1
     
-    dim as Form fQTDebug = createForm(300, 15, 31, 9, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
-    dim as Form fMouseDebug = createForm(300, 200, 22, 5, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
-    dim as Form fOther = createForm(10, 300, 100, 7, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
+    dim as Form fQTDebug = form_create(520, 6, 31, 9, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
+    dim as Form fMouseDebug = form_create(520, 90, 22, 5, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
+    dim as Form fOther = form_create(520, 145, 30, 7, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
     
     dim as StopWatch w_loop
     dim as StopWatch w_search
@@ -108,7 +108,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             ms = ms_new
             'zoom+=ms.dWheel
         end if
-        updateMouse(@ms_new)
+        mouse_update(@ms_new)
         
         ' ===== Events ======
         if(screenEvent(@e)) then
@@ -157,7 +157,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                 ' ===== Left button - Add dot where mouse is =====
                 if(e.button = BUTTON_LEFT) then
                     sw_start(@w_search)
-                    qt_search(@qt, @searchResults, createRect(ms.x-5, ms.y-5, ms.x+5, ms.y+5))
+                    qt_search(@qt, @searchResults, rect_create(ms.x-5, ms.y-5, ms.x+5, ms.y+5))
                     sw_stop(@w_search)
                 end if
             
@@ -179,20 +179,23 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         clearScreen(800, 600, CLEARCOLOR)
         
         sw_start(@w_qtRender)
-        renderQuadTree(@qt, DOTCOLOR, true)
+        qt_render(@qt, DOTCOLOR, true)
         sw_stop(@w_qtRender)
         
-        renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
-        renderQTDebug(@fQTdebug, qt_dbg)
-        renderMouseDebug(@fMouseDebug, @ms)
-        renderForm(@fOther)
-        fPrint(@fOther, "globalCount: " & globalCount)
-        fPrint(@fOther, "w_loop: " & sw_get(@w_loop))
-        fPrint(@fOther, "w_search: " & sw_get(@w_search))
-        fPrint(@fOther, "w_qtRender: " & sw_get(@w_qtRender))
-        fPrint(@fOther, "zoom: " & zoom)
-        fPrint(@fOther, "wheel: " & e.z)
-        fPrint(@fOther, "oldWheel: " & oldWheel)
+        rect_render(@qt_dbg->boundary, rgb(82, 216, 136))
+        
+        ' Render forms
+        form_qtDebug(@fQTdebug, qt_dbg)
+        form_mouseDebug(@fMouseDebug, @ms)
+        
+        form_render(@fOther)
+        form_print(@fOther, "globalCount: " & globalCount)
+        form_print(@fOther, "w_loop: " & sw_get(@w_loop))
+        form_print(@fOther, "w_search: " & sw_get(@w_search))
+        form_print(@fOther, "w_qtRender: " & sw_get(@w_qtRender))
+        form_print(@fOther, "zoom: " & zoom)
+        form_print(@fOther, "wheel: " & e.z)
+        form_print(@fOther, "oldWheel: " & oldWheel)
         screenUnlock()
         
         sw_stop(@w_loop)

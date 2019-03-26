@@ -1,40 +1,39 @@
 #include "rect.bi"
-
 #include "crt/stdio.bi"
 
-function createRect(x as integer, y as integer, w as integer, h as integer) as Rect
+function rect_create(x as integer, y as integer, w as integer, h as integer) as Rect
     return type<Rect>(type<Pnt>(x,y),type<Pnt>(w,h))
 end function
 
-function rectGetNW(r as Rect ptr) as Rect
-    return createRect(r->position.x, r->position.y, r->size.x\2, r->size.y\2)
+function rect_getNW(r as Rect ptr) as Rect
+    return rect_create(r->position.x, r->position.y, r->size.x\2, r->size.y\2)
 end function
 
-function rectGetNE(r as Rect ptr) as Rect
+function rect_getNE(r as Rect ptr) as Rect
     dim as integer halfSizeX = r->size.x\2
-    return createRect(r->position.x + halfSizeX, r->position.y, halfSizeX, r->size.y\2)
+    return rect_create(r->position.x + halfSizeX, r->position.y, halfSizeX, r->size.y\2)
 end function
 
-function rectGetSW(r as Rect ptr) as Rect
+function rect_getSW(r as Rect ptr) as Rect
     dim as integer halfSizeY = r->size.y\2
-    return createRect(r->position.x, r->position.y + halfSizeY, r->size.x\2, halfSizeY)
+    return rect_create(r->position.x, r->position.y + halfSizeY, r->size.x\2, halfSizeY)
 end function
 
-function rectGetSE(r as Rect ptr) as Rect
+function rect_getSE(r as Rect ptr) as Rect
     dim as integer halfSizeX = r->size.x\2
     dim as integer halfSizeY = r->size.y\2
-    return createRect(r->position.x + halfSizeX, r->position.y + halfSizeY, halfSizeX, halfSizeY)
+    return rect_create(r->position.x + halfSizeX, r->position.y + halfSizeY, halfSizeX, halfSizeY)
 end function
 
 'sub setRect(r as Rect ptr, x as integer, y as integer, w as integer, h as integer)
 '    setPnt(@r->position, x, y)
 'end sub
 
-sub offsetRect(r as Rect ptr, dx as integer, dy as integer)
-    offsetPnt(@r->position, dx, dy)
+sub rect_offset(r as Rect ptr, dx as integer, dy as integer)
+    pnt_offset(@r->position, dx, dy)
 end sub
 
-function rectIntersects(r1 as Rect ptr, r2 as Rect ptr) as boolean
+function rect_intersects(r1 as Rect ptr, r2 as Rect ptr) as boolean
     #define r1p r1->position
     #define r1s r1->size
     #define r2p r2->position
@@ -44,7 +43,7 @@ function rectIntersects(r1 as Rect ptr, r2 as Rect ptr) as boolean
     return true
 end function
 
-function rectContains(r as Rect ptr, p as Pnt ptr) as boolean
+function rect_contains(r as Rect ptr, p as Pnt ptr) as boolean
     if(p->x < r->position.x OR p->x > r->position.x + r->size.x) then return false
     if(p->y < r->position.y OR p->y > r->position.y + r->size.y) then return false
     return true

@@ -16,15 +16,15 @@ function qt_create(r as Rect, c as integer, d as integer, p as QuadTree ptr = 0)
 end function
 
 sub qt_subDivide(qt as QuadTree ptr)
-    qt->nw = new QuadTree(qt_create(rectGetNW(@qt->boundary), qt->capacity, qt->depth+1, qt))
-    qt->ne = new QuadTree(qt_create(rectGetNE(@qt->boundary), qt->capacity, qt->depth+1, qt))
-    qt->sw = new QuadTree(qt_create(rectGetSW(@qt->boundary), qt->capacity, qt->depth+1, qt))
-    qt->se = new QuadTree(qt_create(rectGetSE(@qt->boundary), qt->capacity, qt->depth+1, qt))
+    qt->nw = new QuadTree(qt_create(rect_getNW(@qt->boundary), qt->capacity, qt->depth+1, qt))
+    qt->ne = new QuadTree(qt_create(rect_getNE(@qt->boundary), qt->capacity, qt->depth+1, qt))
+    qt->sw = new QuadTree(qt_create(rect_getSW(@qt->boundary), qt->capacity, qt->depth+1, qt))
+    qt->se = new QuadTree(qt_create(rect_getSE(@qt->boundary), qt->capacity, qt->depth+1, qt))
     qt->divided = true
 end sub
 
 function qt_insert(qt as QuadTree ptr, qtn as QTnode) as boolean
-    if(rectContains(@qt->boundary, @qtn.p)) then
+    if(rect_contains(@qt->boundary, @qtn.p)) then
         if(qt->count < qt->capacity) then
             qt->n[qt->count] = qtn
             qt->count+=1
@@ -51,7 +51,7 @@ function qt_search(qt as QuadTree ptr, result as QTresult ptr, area as Rect) as 
     
     dim as boolean ret = false
     
-    if(rectIntersects(@area, @qt->boundary)) then
+    if(rect_intersects(@area, @qt->boundary)) then
         
     end if
     
