@@ -26,17 +26,21 @@ function rectGetSE(r as Rect ptr) as Rect
     return createRect(r->position.x + halfSizeX, r->position.y + halfSizeY, halfSizeX, halfSizeY)
 end function
 
-sub setRect(r as Rect ptr, x as integer, y as integer, w as integer, h as integer)
-    setPnt(@r->position, x, y)
-end sub
+'sub setRect(r as Rect ptr, x as integer, y as integer, w as integer, h as integer)
+'    setPnt(@r->position, x, y)
+'end sub
 
 sub offsetRect(r as Rect ptr, dx as integer, dy as integer)
     offsetPnt(@r->position, dx, dy)
 end sub
 
 function rectIntersects(r1 as Rect ptr, r2 as Rect ptr) as boolean
-    if(r1->position.x > r2->position.x + r2->size.x OR r2->position.x > r1->position.x + r1->size.x) then return false
-    if(r1->position.y < r2->position.y + r2->size.y OR r2->position.y < r1->position.y + r1->size.y) then return false
+    #define r1p r1->position
+    #define r1s r1->size
+    #define r2p r2->position
+    #define r2s r2->size
+    if(r1p.x > (r2p.x+r2s.x) ORELSE (r1p.x+r1s.x) < r2p.x) then return false
+    if(r1p.y > (r2p.y+r2s.y) ORELSE (r1p.y+r1s.y) < r2p.y) then return false
     return true
 end function
 

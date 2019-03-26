@@ -1,3 +1,5 @@
+#pragma once
+
 enum color
     maroon = rgb(128,0,0)
     darkred = rgb(139,0,0)

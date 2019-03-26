@@ -42,8 +42,20 @@ function qt_insert(qt as QuadTree ptr, qtn as QTnode) as boolean
     return false
 end function
 
-function qt_search(qt as QuadTree ptr, p as Pnt, radius as integer, nodes as QTnode ptr, count as integer ptr) as boolean
-    return false
+function qt_search(qt as QuadTree ptr, result as QTresult ptr, area as Rect) as boolean
+    if(result->n = 0) then
+        'First search entry point
+        #define SMAS 1024 'Search memory allocation size
+        result->n = new QTnode ptr[SMAS]
+    end if
+    
+    dim as boolean ret = false
+    
+    if(rectIntersects(@area, @qt->boundary)) then
+        
+    end if
+    
+    return ret
 end function
 
 function qt_getCount(qt as QuadTree ptr) as integer

@@ -6,10 +6,10 @@ function createPnt(x as integer, y as integer) as Pnt
     return type<Pnt>(x,y)
 end function
 
-sub setPnt(p as Pnt ptr, x as integer, y as integer)
-    p->x = x
-    p->y = y
-end sub
+'sub setPnt(p as Pnt ptr, x as integer, y as integer)
+'    p->x = x
+'    p->y = y
+'end sub
 
 sub offsetPnt(p as Pnt ptr, dx as integer, dy as integer)
     p->x+=dx

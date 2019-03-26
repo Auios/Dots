@@ -12,6 +12,7 @@
 #include "color.bi"
 
 #include "sys.bas"
+#include "form.bas"
 
 #include "pnt.bas"
 #include "rect.bas"
@@ -20,15 +21,15 @@
 #include "quadtree.bas"
 #include "dot.bas"
 
-#define QT_SIZE 256
+#include "render.bas"
+
+#define QT_SIZE 512
 #define QT_CAP 8
 
-#define BB 8 'Border buffer
-#define CS 8 'Char size
 #define CLEARCOLOR color.slateGray
-#define TEXTCOLOR color.dimGray
-#define BORDERCOLOR color.dimGray
 #define BACKGROUNDCOLOR color.silver
+#define BORDERCOLOR color.dimGray
+#define TEXTCOLOR color.dimGray
 #define DOTCOLOR color.yellow
 
 using fb
@@ -59,67 +60,6 @@ sub displayInstructions()
     echo("Escape - Exit application")
 end sub
 
-sub clearScreen(wdth as long, hght as long, c as uinteger = rgb(0,0,0))
-    line(0,0)-(wdth, hght), c, bf
-end sub
-
-sub renderPoint(p as Pnt ptr, r as integer = 1, zoom as single = 1, c as uinteger = rgb(255, 255, 255))
-    circle(p->x * zoom, p->y * zoom), r, c
-end sub
-
-sub renderRect(r as Rect ptr, zoom as single = 1, c as uinteger = rgb(255, 255 ,255))
-    #define _p r->position
-    #define _s r->size
-    line( _p.x*zoom , _p.y*zoom )-step( _s.x*zoom , _s.y*zoom ),c,b
-end sub
-
-sub renderQuadTree(qt as QuadTree ptr, zoom as single = 1, renderQT as boolean = false)
-    if(qt = 0) then return
-    if(renderQT) then renderRect(@qt->boundary, zoom)
-    renderQuadTree(qt->nw, zoom, renderQT)
-    renderQuadTree(qt->ne, zoom, renderQT)
-    renderQuadTree(qt->sw, zoom, renderQT)
-    renderQuadTree(qt->se, zoom, renderQT)
-    
-    dim as integer i = 0
-    while(i < qt->count)
-        renderPoint(@qt->n[i].p, 2, zoom, DOTCOLOR)
-        i+=1
-    wend
-end sub
-
-sub renderQTDebug(x as integer, y as integer, qt as QuadTree ptr)
-    dim as integer wdth = 31
-    dim as integer hght = 9
-    line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BACKGROUNDCOLOR,bf
-    line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BORDERCOLOR,b
-    x+=BB\2
-    y+=BB\2
-    draw string(x, y), "Count(total): " & qt_getCount(qt), TEXTCOLOR:y+=CS
-    draw string(x, y), "Count(local): " & qt->count, TEXTCOLOR:y+=CS
-    draw string(x, y), "Depth: " & qt->depth, TEXTCOLOR:y+=CS
-    draw string(x, y), "Boundary: " & toString(@qt->boundary), TEXTCOLOR:y+=CS
-    draw string(x, y), "parent: " & qt->parent, TEXTCOLOR:y+=CS
-    draw string(x, y), "ne: " & qt->ne, TEXTCOLOR:y+=CS
-    draw string(x, y), "nw: " & qt->nw, TEXTCOLOR:y+=CS
-    draw string(x, y), "se: " & qt->se, TEXTCOLOR:y+=CS
-    draw string(x, y), "sw: " & qt->sw, TEXTCOLOR:y+=CS
-end sub
-
-sub renderMouseDebug(x as integer, y as integer, ms as Mouse ptr)
-    dim as integer wdth = 21
-    dim as integer hght = 5
-    line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BACKGROUNDCOLOR,bf
-    line(x,y)-(x+wdth*CS+BB, y+hght*CS+BB),BORDERCOLOR,b
-    x+=BB\2
-    y+=BB\2
-    draw string(x, y), "State: " & ms->state, TEXTCOLOR:y+=8
-    draw string(x, y), "Buttons: " & ms->buttons, TEXTCOLOR:y+=8
-    draw string(x, y), "Wheel: " & ms->wheel, TEXTCOLOR:y+=8
-    draw string(x, y), "Clip: " & ms->clip, TEXTCOLOR:y+=8
-    draw string(x, y), "Position: (" & ms->x & "," & ms->y & ")", TEXTCOLOR:y+=8
-end sub
-
 sub buildQT(qt as QuadTree ptr, d as Dot ptr, size as integer)
     
 end sub
@@ -128,7 +68,6 @@ function spamDots(qt as QuadTree ptr, count as integer, x as integer = 0, y as i
     dim as integer added
     for i as integer = 0 to count-1
         added+=qt_insert(qt, qtn_create(createPnt(iif(w,w*rnd()+x,x),iif(h,h*rnd()+y,y)),0))
-        'added+=iif(qt_insert(qt, Pnt(iif(w,w*rnd()+x,x),iif(h,h*rnd()+y,y))),1,0)
     next i
     return added
 end function
@@ -141,19 +80,24 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     
     dim as QuadTree qt = qt_create(createRect(0, 0, QT_SIZE, QT_SIZE), QT_CAP, 0)
     dim as QuadTree ptr qt_dbg = @qt
+    dim as QTresult searchResults
     dim as integer globalCount = 0
     dim as integer oldWheel
     dim as integer zoom = 1
     
+    dim as Form fQTDebug = createForm(300, 15, 31, 9, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
+    dim as Form fMouseDebug = createForm(300, 200, 22, 5, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
+    dim as Form fOther = createForm(10, 300, 100, 7, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
+    
     dim as StopWatch w_loop
-    dim as StopWatch w_insert
+    dim as StopWatch w_search
     dim as StopWatch w_qtRender
     
     dim as Mouse ms_new, ms
     dim as EVENT e
     dim as boolean runApp = true
     
-    'globalCount+=spamDots(@qt, 100000, 0, 0, QT_SIZE, QT_SIZE)
+    globalCount+=spamDots(@qt, 9, 0, 0, QT_SIZE, QT_SIZE)
     
     ' ===== Main loop =====
     while(runApp)
@@ -212,9 +156,9 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             case EVENT_MOUSE_BUTTON_PRESS
                 ' ===== Left button - Add dot where mouse is =====
                 if(e.button = BUTTON_LEFT) then
-                    sw_start(@w_insert)
-                    globalCount+=qt_insert(@qt, qtn_create(type<Pnt>(ms.x \ zoom, ms.y \ zoom)))
-                    sw_stop(@w_insert)
+                    sw_start(@w_search)
+                    qt_search(@qt, @searchResults, createRect(ms.x-5, ms.y-5, ms.x+5, ms.y+5))
+                    sw_stop(@w_search)
                 end if
             
             case EVENT_MOUSE_WHEEL
@@ -225,9 +169,9 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         
         if(ms.buttons = 2) then
             dim as Pnt p = type<Pnt>(ms.x, ms.y)
-            sw_start(@w_insert)
+            sw_start(@w_search)
             globalCount+=qt_insert(@qt, qtn_create(p))
-            sw_stop(@w_insert)
+            sw_stop(@w_search)
         end if
         
         ' ===== Rendering =====
@@ -235,19 +179,20 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         clearScreen(800, 600, CLEARCOLOR)
         
         sw_start(@w_qtRender)
-        renderQuadTree(@qt, zoom, true)
+        renderQuadTree(@qt, DOTCOLOR, true)
         sw_stop(@w_qtRender)
         
-        renderRect(@qt_dbg->boundary, zoom, rgb(82, 216, 136))
-        renderQTDebug(300, 15, qt_dbg)
-        renderMouseDebug(300, 200, @ms)
-        draw string(10, 292), "globalCount: " & globalCount
-        draw string(10, 300), "w_loop: " & sw_get(@w_loop)
-        draw string(10, 308), "w_insert: " & sw_get(@w_insert)
-        draw string(10, 316), "w_qtRender: " & sw_get(@w_qtRender)
-        draw string(10, 324), "zoom: " & zoom
-        draw string(10, 332), "wheel: " & e.z
-        draw string(10, 340), "oldWheel: " & oldWheel
+        renderRect(@qt_dbg->boundary, rgb(82, 216, 136))
+        renderQTDebug(@fQTdebug, qt_dbg)
+        renderMouseDebug(@fMouseDebug, @ms)
+        renderForm(@fOther)
+        fPrint(@fOther, "globalCount: " & globalCount)
+        fPrint(@fOther, "w_loop: " & sw_get(@w_loop))
+        fPrint(@fOther, "w_search: " & sw_get(@w_search))
+        fPrint(@fOther, "w_qtRender: " & sw_get(@w_qtRender))
+        fPrint(@fOther, "zoom: " & zoom)
+        fPrint(@fOther, "wheel: " & e.z)
+        fPrint(@fOther, "oldWheel: " & oldWheel)
         screenUnlock()
         
         sw_stop(@w_loop)
