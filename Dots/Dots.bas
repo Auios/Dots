@@ -12,6 +12,7 @@
 #include "color.bi"
 
 #include "sys.bas"
+#include "sound.bas"
 #include "form.bas"
 
 #include "pnt.bas"
