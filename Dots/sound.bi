@@ -14,8 +14,8 @@ end type
 
 declare function sound_load(snd as Sound ptr, path as string) as boolean
 declare sub sound_play(snd as Sound ptr)
-declare sub sound_pause(snd as Sound ptr)
-declare sub sound_stop(snd as Sound ptr)
+'declare sub sound_pause(snd as Sound ptr)
+'declare sub sound_stop(snd as Sound ptr)
 declare sub sound_setRepeat(snd as Sound ptr, repeat as boolean)
 declare sub sound_setGain(snd as Sound ptr, gain as single = 1.0)
 declare sub sound_setPitch(snd as Sound ptr, pitch as single = 1.0)

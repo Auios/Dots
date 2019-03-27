@@ -2,6 +2,14 @@
 'http://distro.ibiblio.org/rootlinux/rootlinux-ports/more/freealut/freealut-1.1.0/doc/alut.html
 'https://www.openal.org/documentation/OpenAL_Programmers_Guide.pdf
 
+#MACRO sound_init(_c, _v)
+alutInit((_c),(_v))
+#ENDMACRO
+
+#MACRO sound_exit()
+alutExit()
+#ENDMACRO
+
 function sound_load(snd as Sound ptr, path as string) as boolean
     snd->path = path
     snd->buffer = alutCreateBufferFromFile(snd->path)
@@ -28,13 +36,21 @@ sub sound_play(snd as Sound ptr)
     alSourcePlay(snd->source)
 end sub
 
-sub sound_pause(snd as Sound ptr)
-    alSourcePause(snd->source)
-end sub
+'sub sound_pause(snd as Sound ptr)
+'    alSourcePause(snd->source)
+'end sub
 
-sub sound_stop(snd as Sound ptr)
-    alSourceStop(snd->source)
-end sub
+#MACRO sound_pause(_s)
+alSourcePause((_s)->source)
+#ENDMACRO
+
+'sub sound_stop(snd as Sound ptr)
+'    alSourceStop(snd->source)
+'end sub
+
+#MACRO sound_stop(_s)
+alSourceStop((_s)->source)
+#ENDMACRO
 
 sub sound_setRepeat(snd as Sound ptr, repeat as boolean)
     snd->repeat = repeat
@@ -55,11 +71,3 @@ sub sound_delete(snd as Sound ptr)
     alDeleteBuffers(1, @snd->buffer)
     alDeleteSources(1, @snd->source)
 end sub
-
-'sub reportError()
-'    printf(!"ALUT error: %s\n", alutGetErrorString(alutGetError()))
-'end sub
-'
-'if(alutInit(0,0)=0) then
-'    reportError()
-'end if

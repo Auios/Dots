@@ -77,6 +77,8 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     screenRes(800, 600, 32, 1, 0)
     dim as any ptr scrnBuff = screenPtr()
     
+    sound_init(0,0)
+    
     displayInstructions()
     
     dim as QuadTree qt = qt_create(rect_create(0, 0, QT_SIZE, QT_SIZE), QT_CAP, 0)
@@ -203,7 +205,9 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         sleep(1, 1)
     wend
     
+    ' Cleanup any messes
     qt_delete(@qt)
+    sound_exit()
     
     return 0
 end function
