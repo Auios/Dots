@@ -31,10 +31,10 @@ sub qt_render(qt as QuadTree ptr, dotClr as uinteger, renderDot as boolean = fal
     if(renderDot ANDALSO renderQT) then
         if(renderQT) then rect_render(@qt->boundary, rgb(255, 255, 255))
         if(qt->divided) then
-            qt_render(qt->nw, dotClr, renderQT)
-            qt_render(qt->ne, dotClr, renderQT)
-            qt_render(qt->sw, dotClr, renderQT)
-            qt_render(qt->se, dotClr, renderQT)
+            qt_render(qt->nw, dotClr, renderDot, renderQT)
+            qt_render(qt->ne, dotClr, renderDot, renderQT)
+            qt_render(qt->sw, dotClr, renderDot, renderQT)
+            qt_render(qt->se, dotClr, renderDot, renderQT)
         end if
         
         if(renderDot) then

@@ -8,12 +8,16 @@
 #define FALSE 0
 #define isFalse( _F ) ((_F)=FALSE)
 
+#define _SYS_SOUND_ FALSE
+
 #include "fbgfx.bi"
 #include "color.bi"
 
 #include "sys.bas"
-#include "sound.bas"
 #include "form.bas"
+#IF(SYS_SOUND)
+#include "sound.bas"
+#ENDIF
 
 #include "pnt.bas"
 #include "rect.bas"
@@ -64,7 +68,8 @@ end sub
 sub qt_build(qt as QuadTree ptr, d as Dot ptr, size as integer)
     if(qt) then qt_reset(qt)
     for i as integer = 0 to size-1
-        qt_insert(qt, qtn_create(d[i].position, @d[i]))
+        qt_insert(qt, qtn_create(d[i].position, 0))
+        'qt_insert(qt, qtn_create(d[i].position, @d[i]))
     next i
 end sub
 
@@ -72,7 +77,6 @@ function generateDots(count as integer, area as Rect, v as integer) as Dot ptr
     dim as Dot ptr d = new Dot[count]
     for i as integer = 0 to count-1
         d[i] = dot_create(rect_getRandomPoint(@area),v*rnd())
-        echo("Dot: (" & d[i].position.x & "," & d[i].position.y & ") - " & d[i].v)
     next i
     return d
 end function
@@ -89,7 +93,9 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     screenRes(800, 600, 32, 1, 0)
     dim as any ptr scrnBuff = screenPtr()
     
+    #IF(_SYS_SOUND_)
     sound_init(0,0)
+    #ENDIF
     
     displayInstructions()
     
@@ -103,6 +109,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as Form fOther = form_create(520, 145, 30, 4, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
     
     dim as StopWatch w_loop
+    dim as StopWatch w_build
     dim as StopWatch w_search
     dim as StopWatch w_qtRender
     
@@ -113,7 +120,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as integer maxDots = 1000
     dim as Dot ptr dots = generateDots(maxDots, qt.boundary, 100)
     
-    qt_build(@qt, @dots, maxDots)
+    
     
     'spamDots(@qt, 9, 0, 0, QT_SIZE, QT_SIZE)
     
@@ -127,6 +134,10 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             'zoom+=ms.dWheel
         end if
         mouse_update(@ms_new)
+        
+        sw_start(@w_build)
+        qt_build(@qt, dots, maxDots)
+        sw_stop(@w_build)
         
         ' ===== Events ======
         if(screenEvent(@e)) then
@@ -192,7 +203,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         end if
         
         ' ===== Rendering =====
-        'screenLock()
+        screenLock()
         clearScreen(800, 600, CLEARCOLOR)
         
         'renderDots(dots, maxDots, DOTCOLOR)
@@ -210,14 +221,11 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         form_mouseDebug(@fMouseDebug, @ms)
         
         form_render(@fOther)
-'        form_print(@fOther, "globalCount: " & globalCount)
         form_print(@fOther, "w_loop: " & sw_get(@w_loop))
         form_print(@fOther, "w_search: " & sw_get(@w_search))
+        form_print(@fOther, "w_Build: " & sw_get(@w_build))
         form_print(@fOther, "w_qtRender: " & sw_get(@w_qtRender))
-'        form_print(@fOther, "zoom: " & zoom)
-        form_print(@fOther, "wheel: " & e.z)
-'        form_print(@fOther, "oldWheel: " & oldWheel)
-        'screenUnlock()
+        screenUnlock()
         
         sw_stop(@w_loop)
         sleep(1, 1)
@@ -225,7 +233,10 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     
     ' Cleanup any messes
     qt_delete(@qt)
+    
+    #IF(_SYS_SOUND_)
     sound_exit()
+    #ENDIF
     
     return 0
 end function
