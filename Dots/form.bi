@@ -7,6 +7,7 @@ type Form
     as uinteger bckClr
     as uinteger borClr
     as uinteger txtClr
+    as integer margin
     as integer currentLine
 end type
 

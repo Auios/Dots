@@ -1,11 +1,13 @@
 #include "pnt.bi"
 #include "crt/stdio.bi"
 
-function pnt_create(x as integer, y as integer) as Pnt
-    return type<Pnt>(x,y)
-end function
+'function pnt_create(x as integer, y as integer) as Pnt
+'    return type<Pnt>(x,y)
+'end function
 
-'sub setPnt(p as Pnt ptr, x as integer, y as integer)
+
+
+'sub pnt_set(p as Pnt ptr, x as integer, y as integer)
 '    p->x = x
 '    p->y = y
 'end sub

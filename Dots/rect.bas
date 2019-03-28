@@ -29,9 +29,9 @@ end function
 '    setPnt(@r->position, x, y)
 'end sub
 
-sub rect_offset(r as Rect ptr, dx as integer, dy as integer)
-    pnt_offset(@r->position, dx, dy)
-end sub
+'sub rect_offset(r as Rect ptr, dx as integer, dy as integer)
+'    pnt_offset(@r->position, dx, dy)
+'end sub
 
 function rect_intersects(r1 as Rect ptr, r2 as Rect ptr) as boolean
     #define r1p r1->position
@@ -47,6 +47,10 @@ function rect_contains(r as Rect ptr, p as Pnt ptr) as boolean
     if(p->x < r->position.x OR p->x > r->position.x + r->size.x) then return false
     if(p->y < r->position.y OR p->y > r->position.y + r->size.y) then return false
     return true
+end function
+
+function rect_getRandomPoint(r as Rect ptr) as Pnt
+    return pnt_create(r->position.x+(r->size.x*rnd()),(r->position.y+r->size.y*rnd()))
 end function
 
 function toString overload(r as Rect ptr) as string

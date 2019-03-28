@@ -61,9 +61,22 @@ sub displayInstructions()
     echo("Escape - Exit application")
 end sub
 
-sub buildQT(qt as QuadTree ptr, d as Dot ptr, size as integer)
-    
+sub qt_build(qt as QuadTree ptr, d as Dot ptr, size as integer)
+    if(qt) then qt_reset(qt)
+    for i as integer = 0 to size-1
+        qt_insert(qt, qtn_create(d[i].position, @d[i]))
+    next i
 end sub
+
+function generateDots(count as integer, area as Rect, v as integer) as Dot ptr
+    dim as Dot ptr d = new Dot[count]
+    for i as integer = 0 to count-1
+        dim as Pnt p = rect_getRandomPoint(@area)
+        dot_create(p,v*rnd())
+        echo(toString(@d[i]))
+    next i
+    return d
+end function
 
 function spamDots(qt as QuadTree ptr, count as integer, x as integer = 0, y as integer = 0, w as integer = 0, h as integer = 0) as integer
     dim as integer added
@@ -84,13 +97,11 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as QuadTree qt = qt_create(rect_create(0, 0, QT_SIZE, QT_SIZE), QT_CAP, 0)
     dim as QuadTree ptr qt_dbg = @qt
     dim as QTresult searchResults
-    dim as integer globalCount = 0
-    dim as integer oldWheel
-    dim as integer zoom = 1
+    
     
     dim as Form fQTDebug = form_create(520, 6, 31, 9, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
     dim as Form fMouseDebug = form_create(520, 90, 22, 5, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
-    dim as Form fOther = form_create(520, 145, 30, 7, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
+    dim as Form fOther = form_create(520, 145, 30, 4, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
     
     dim as StopWatch w_loop
     dim as StopWatch w_search
@@ -100,7 +111,10 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as EVENT e
     dim as boolean runApp = true
     
-    globalCount+=spamDots(@qt, 9, 0, 0, QT_SIZE, QT_SIZE)
+    dim as integer maxDots = 1000
+    dim as Dot ptr dots = generateDots(maxDots, qt.boundary, 100)
+    
+    'spamDots(@qt, 9, 0, 0, QT_SIZE, QT_SIZE)
     
     ' ===== Main loop =====
     while(runApp)
@@ -135,24 +149,23 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                 if(e.scancode = SC_BACKSPACE AND qt_dbg->parent <> 0) then qt_dbg = qt_dbg->parent
                 
                 ' ===== A - Spam dot in corner =====
-                if(e.scancode = SC_A) then globalCount+=spamDots(@qt, 1)
+                if(e.scancode = SC_A) then spamDots(@qt, 1)
                 
                 ' ===== S - Spam dots in corner =====
-                if(e.scancode = SC_S) then globalCount+=spamDots(@qt, 10)
+                if(e.scancode = SC_S) then spamDots(@qt, 10)
                 
                 ' ===== D - Spam dots in corner =====
-                if(e.scancode = SC_D) then globalCount+=spamDots(@qt, 100)
+                if(e.scancode = SC_D) then spamDots(@qt, 100)
                 
                 ' ===== Q - Spam dots randomly=====
-                if(e.scancode = SC_Q) then globalCount+=spamDots(@qt, 1000, 0, 0, QT_SIZE, QT_SIZE)
+                if(e.scancode = SC_Q) then spamDots(@qt, 1000, 0, 0, QT_SIZE, QT_SIZE)
                 
                 ' ===== W - Spam dots randomly=====
-                if(e.scancode = SC_W) then globalCount+=spamDots(@qt, 10000, 0, 0, QT_SIZE, QT_SIZE)
+                if(e.scancode = SC_W) then spamDots(@qt, 10000, 0, 0, QT_SIZE, QT_SIZE)
                 
                 ' ===== C - Clear =====
                 if(e.scancode = SC_C) then
                     qt_reset(@qt)
-                    globalCount = 0
                 end if
                 
             ' ===== Mouse =====
@@ -165,15 +178,15 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                 end if
             
             case EVENT_MOUSE_WHEEL
-                zoom += e.z-oldWheel
-                oldWheel = e.z
+'                zoom += e.z-oldWheel
+'                oldWheel = e.z
             end select
         end if
         
-        if(ms.buttons = 2) then
+        if(ms.buttons = BUTTON_RIGHT) then
             dim as Pnt p = type<Pnt>(ms.x, ms.y)
             sw_start(@w_search)
-            globalCount+=qt_insert(@qt, qtn_create(p))
+            qt_insert(@qt, qtn_create(p))
             sw_stop(@w_search)
         end if
         
@@ -181,9 +194,13 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         screenLock()
         clearScreen(800, 600, CLEARCOLOR)
         
+        renderDots(dots, maxDots, DOTCOLOR)
+        
         sw_start(@w_qtRender)
-        qt_render(@qt, DOTCOLOR, true)
+        qt_render(@qt, DOTCOLOR, false, false)
         sw_stop(@w_qtRender)
+        
+        
         
         rect_render(@qt_dbg->boundary, rgb(82, 216, 136))
         
@@ -192,13 +209,13 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         form_mouseDebug(@fMouseDebug, @ms)
         
         form_render(@fOther)
-        form_print(@fOther, "globalCount: " & globalCount)
+'        form_print(@fOther, "globalCount: " & globalCount)
         form_print(@fOther, "w_loop: " & sw_get(@w_loop))
         form_print(@fOther, "w_search: " & sw_get(@w_search))
         form_print(@fOther, "w_qtRender: " & sw_get(@w_qtRender))
-        form_print(@fOther, "zoom: " & zoom)
+'        form_print(@fOther, "zoom: " & zoom)
         form_print(@fOther, "wheel: " & e.z)
-        form_print(@fOther, "oldWheel: " & oldWheel)
+'        form_print(@fOther, "oldWheel: " & oldWheel)
         screenUnlock()
         
         sw_stop(@w_loop)

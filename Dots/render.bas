@@ -2,6 +2,7 @@
 #include "pnt.bi"
 #include "rect.bi"
 #include "form.bi"
+#include "dot.bi"
 
 #include "quadtree.bi"
 #include "mouse.bi"
@@ -14,26 +15,34 @@ sub pnt_render(p as Pnt ptr, r as integer = 1, c as uinteger = rgb(255, 255, 255
     circle(p->x, p->y), r, c
 end sub
 
+sub renderDots(d as Dot ptr, count as integer, dotClr as uinteger)
+    for i as integer = 0 to count-1
+        pnt_render(@d[i].position, 2, dotClr)
+    next i
+end sub
+
 sub rect_render(r as Rect ptr, c as uinteger = rgb(255, 255 ,255))
     #define _p r->position
     #define _s r->size
     line((_p).x, (_p).y)-step((_s).x, (_s).y ),c,b
 end sub
 
-sub qt_render(qt as QuadTree ptr, dotClr as uinteger, renderQT as boolean = false)
-    if(renderQT) then rect_render(@qt->boundary, rgb(255, 255, 255))
-    if(qt->divided) then
-        qt_render(qt->nw, dotClr, renderQT)
-        qt_render(qt->ne, dotClr, renderQT)
-        qt_render(qt->sw, dotClr, renderQT)
-        qt_render(qt->se, dotClr, renderQT)
+sub qt_render(qt as QuadTree ptr, dotClr as uinteger, renderDot as boolean = false, renderQT as boolean = false)
+    if(renderDot ANDALSO renderQT) then
+        if(renderQT) then rect_render(@qt->boundary, rgb(255, 255, 255))
+        if(qt->divided) then
+            qt_render(qt->nw, dotClr, renderQT)
+            qt_render(qt->ne, dotClr, renderQT)
+            qt_render(qt->sw, dotClr, renderQT)
+            qt_render(qt->se, dotClr, renderQT)
+        end if
+        
+        if(renderDot) then
+            for i as integer = 0 to qt->count-1
+                pnt_render(@qt->n[i].p, 2, dotClr)
+            next i
+        end if
     end if
-    
-    dim as integer i = 0
-    while(i < qt->count)
-        pnt_render(@qt->n[i].p, 2, dotClr)
-        i+=1
-    wend
 end sub
 
 sub form_qtDebug(f as Form ptr, qt as QuadTree ptr)

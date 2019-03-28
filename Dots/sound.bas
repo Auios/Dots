@@ -1,6 +1,7 @@
 #include "sound.bi"
 'http://distro.ibiblio.org/rootlinux/rootlinux-ports/more/freealut/freealut-1.1.0/doc/alut.html
 'https://www.openal.org/documentation/OpenAL_Programmers_Guide.pdf
+'https://github.com/kcat/openal-soft/wiki/Programmer's-Guide
 
 #MACRO sound_init(_c, _v)
 alutInit((_c),(_v))
@@ -40,17 +41,9 @@ end sub
 '    alSourcePause(snd->source)
 'end sub
 
-#MACRO sound_pause(_s)
-alSourcePause((_s)->source)
-#ENDMACRO
-
 'sub sound_stop(snd as Sound ptr)
 '    alSourceStop(snd->source)
 'end sub
-
-#MACRO sound_stop(_s)
-alSourceStop((_s)->source)
-#ENDMACRO
 
 sub sound_setRepeat(snd as Sound ptr, repeat as boolean)
     snd->repeat = repeat

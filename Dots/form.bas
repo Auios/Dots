@@ -2,8 +2,7 @@
 #include "pnt.bi"
 #include "rect.bi"
 
-#define CS 8
-#define BB 8
+#define CS 8 'Character size
 
 function form_create(x as integer, y as integer, w as integer, h as integer,_
     bckClr as uinteger = rgb(200, 200, 200), borClr as uinteger = rgb(100, 100, 100), txtClr as uinteger = rgb(100, 100, 100)) as Form
@@ -12,6 +11,7 @@ function form_create(x as integer, y as integer, w as integer, h as integer,_
     f.bckClr = bckClr
     f.borClr = borClr
     f.txtClr = txtClr
+    f.margin = 4
     return f
 end function
 
@@ -28,14 +28,17 @@ sub form_render(f as Form ptr)
     #define _y f->area.position.y
     #define _w f->area.size.x
     #define _h f->area.size.y
+    dim as integer rm = f->margin*2 ' Real margin
     f->currentLine = 0
-    line(_x,_y)-step((_w*CS)+BB,(_h*CS)+BB), f->bckClr, bf
-    line(_x,_y)-step((_w*CS)+BB,(_h*CS)+BB), f->borClr, b
+    line(_x,_y)-step((_w*CS)+rm,(_h*CS)+rm), f->bckClr, bf
+    line(_x,_y)-step((_w*CS)+rm,(_h*CS)+rm), f->borClr, b
 end sub
 
 sub form_print(f as Form ptr, txt as string)
     #define _x f->area.position.x
     #define _y f->area.position.y
-    draw string(_x+(BB\2), _y+(BB\2)+(CS*f->currentLine)),txt, f->txtClr
+    #define _l f->currentLine
+    #define _m f->margin
+    draw string(_x+_m, _y+_m+(CS*_l)),txt, f->txtClr
     f->currentLine+=1
 end sub

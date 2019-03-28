@@ -20,3 +20,11 @@ declare sub sound_setRepeat(snd as Sound ptr, repeat as boolean)
 declare sub sound_setGain(snd as Sound ptr, gain as single = 1.0)
 declare sub sound_setPitch(snd as Sound ptr, pitch as single = 1.0)
 declare sub sound_delete(snd as Sound ptr)
+
+#MACRO sound_pause(_s)
+alSourcePause((_s)->source)
+#ENDMACRO
+
+#MACRO sound_stop(_s)
+alSourceStop((_s)->source)
+#ENDMACRO
