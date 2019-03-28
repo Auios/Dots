@@ -71,9 +71,8 @@ end sub
 function generateDots(count as integer, area as Rect, v as integer) as Dot ptr
     dim as Dot ptr d = new Dot[count]
     for i as integer = 0 to count-1
-        dim as Pnt p = rect_getRandomPoint(@area)
-        dot_create(p,v*rnd())
-        echo(toString(@d[i]))
+        d[i] = dot_create(rect_getRandomPoint(@area),v*rnd())
+        echo("Dot: (" & d[i].position.x & "," & d[i].position.y & ") - " & d[i].v)
     next i
     return d
 end function
@@ -113,6 +112,8 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     
     dim as integer maxDots = 1000
     dim as Dot ptr dots = generateDots(maxDots, qt.boundary, 100)
+    
+    qt_build(@qt, @dots, maxDots)
     
     'spamDots(@qt, 9, 0, 0, QT_SIZE, QT_SIZE)
     
@@ -191,13 +192,13 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         end if
         
         ' ===== Rendering =====
-        screenLock()
+        'screenLock()
         clearScreen(800, 600, CLEARCOLOR)
         
-        renderDots(dots, maxDots, DOTCOLOR)
+        'renderDots(dots, maxDots, DOTCOLOR)
         
         sw_start(@w_qtRender)
-        qt_render(@qt, DOTCOLOR, false, false)
+        qt_render(@qt, DOTCOLOR, true, true)
         sw_stop(@w_qtRender)
         
         
@@ -216,7 +217,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
 '        form_print(@fOther, "zoom: " & zoom)
         form_print(@fOther, "wheel: " & e.z)
 '        form_print(@fOther, "oldWheel: " & oldWheel)
-        screenUnlock()
+        'screenUnlock()
         
         sw_stop(@w_loop)
         sleep(1, 1)
