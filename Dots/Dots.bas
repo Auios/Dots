@@ -185,7 +185,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
                 ' ===== Left button - Add dot where mouse is =====
                 if(e.button = BUTTON_LEFT) then
                     sw_start(@w_search)
-                    qt_search(@qt, @searchResults, rect_create(ms.x-5, ms.y-5, ms.x+5, ms.y+5))
+                    qt_searchArea(@qt, @searchResults, rect_create(ms.x-5, ms.y-5, ms.x+5, ms.y+5))
                     sw_stop(@w_search)
                 end if
             

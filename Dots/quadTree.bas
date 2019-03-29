@@ -42,10 +42,11 @@ function qt_insert(qt as QuadTree ptr, qtn as QTnode) as boolean
     return false
 end function
 
-function qt_search(qt as QuadTree ptr, result as QTresult ptr, area as Rect) as boolean
+function qt_searchArea(qt as QuadTree ptr, result as QTresult ptr, area as Rect) as integer
+    dim as integer found
+    #define SMAS 1024 'Search memory allocation size
     if(result->n = 0) then
         'First search entry point
-        #define SMAS 1024 'Search memory allocation size
         result->n = new QTnode ptr[SMAS]
     end if
     
