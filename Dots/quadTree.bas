@@ -1,5 +1,6 @@
 #include "quadtree.bi"
 #include "pnt.bi"
+#include "crt/string.bi"
 
 function qtn_create(p as Pnt, d as any ptr = 0) as QTnode
     return type<QTnode>(p, d)
@@ -43,16 +44,34 @@ function qt_insert(qt as QuadTree ptr, qtn as QTnode) as boolean
 end function
 
 function qt_searchArea(qt as QuadTree ptr, result as QTresult ptr, area as Rect) as integer
+    if(result = 0) then return 0
     dim as integer found
     #define SMAS 1024 'Search memory allocation size
     if(result->n = 0) then
         'First search entry point
         result->n = new QTnode ptr[SMAS]
+        result->capacity = SMAS
+        result->count = 0
     end if
     
-    dim as boolean ret = false
+    dim as integer ret = 0
     
     if(rect_intersects(@area, @qt->boundary)) then
+        ret+=qt->count
+        if((result->count + qt->count) > result->capacity) then
+            dim as QTnode ptr ptr temp = new QTnode ptr[result->capacity+SMAS]
+            memcpy(temp, result->n, result->count*sizeof(QTnode ptr))
+            delete[] result->n
+            result->n = temp
+        end if
+        
+        for i as integer = 0 to qt->count-1
+            if(rect_contains(@qt->boundary, @qt->n[i].p) then
+                result->n[count] = @qt->n[i]
+                count+=1
+            end if
+        next i
+        
         
     end if
     
