@@ -46,7 +46,7 @@ end function
 function qt_searchArea(qt as QuadTree ptr, result as QTresult ptr, area as Rect) as integer
     if(rect_intersects(@area, @qt->boundary)) then
         if(result = 0) then return 0
-        dim as integer found
+        
         #define SMAS 1024 'Search memory allocation size
         if(result->n = 0) then
             'First search entry point
@@ -55,9 +55,8 @@ function qt_searchArea(qt as QuadTree ptr, result as QTresult ptr, area as Rect)
             result->count = 0
         end if
         
-        dim as integer ret = 0
-    
-        ret+=qt->count
+        dim as integer found=qt->count
+        
         if((result->count + qt->count) > result->capacity) then
             dim as QTnode ptr ptr temp = new QTnode ptr[result->capacity+SMAS]
             memcpy(temp, result->n, result->count*sizeof(QTnode ptr))
@@ -69,11 +68,14 @@ function qt_searchArea(qt as QuadTree ptr, result as QTresult ptr, area as Rect)
             if(rect_contains(@qt->boundary, @qt->n[i].p) then
                 result->n[count] = @qt->n[i]
                 count+=1
-                ret+=1
+                found+=1
             end if
         next i
         
-        ret+=
+        found+=qt_searchArea(qt->nw, result, area)
+        found+=qt_searchArea(qt->ne, result, area)
+        found+=qt_searchArea(qt->sw, result, area)
+        found+=qt_searchArea(qt->se, result, area)
     end if
     
     return ret
