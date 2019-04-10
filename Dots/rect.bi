@@ -22,6 +22,10 @@ declare function toString overload(r as Rect ptr) as string
 pnt_set((_r)->position,(_x),(_y)):pnt_set((_r)->size,(_w),(_h))
 #ENDMACRO
 
+#MACRO rect_setPos(_r, _x, _y)
+pnt_set((_r)->position,(_x),(_y))
+#ENDMACRO
+
 #MACRO rect_offset(_r, _dx, _dy)
 pnt_offset(@(_r)->position, (_dx), (_dy))
 #ENDMACRO

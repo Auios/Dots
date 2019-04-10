@@ -44,6 +44,8 @@ function qt_insert(qt as QuadTree ptr, qtn as QTnode) as boolean
 end function
 
 function qt_searchArea(qt as QuadTree ptr, result as QTresult ptr, area as Rect) as integer
+    dim as integer found = 0
+    
     if(rect_intersects(@area, @qt->boundary)) then
         if(result = 0) then return 0
         
@@ -55,30 +57,31 @@ function qt_searchArea(qt as QuadTree ptr, result as QTresult ptr, area as Rect)
             result->count = 0
         end if
         
-        dim as integer found=qt->count
+        found = qt->count
         
         if((result->count + qt->count) > result->capacity) then
-            dim as QTnode ptr ptr temp = new QTnode ptr[result->capacity+SMAS]
+            result->capacity+=SMAS
+            dim as QTnode ptr ptr temp = new QTnode ptr[result->capacity]
             memcpy(temp, result->n, result->count*sizeof(QTnode ptr))
             delete[] result->n
             result->n = temp
         end if
         
         for i as integer = 0 to qt->count-1
-            if(rect_contains(@qt->boundary, @qt->n[i].p) then
-                result->n[count] = @qt->n[i]
-                count+=1
+            if(rect_contains(@area, @qt->n[i].p)) then
+                result->n[result->count] = @qt->n[i]
+                result->count+=1
                 found+=1
             end if
         next i
         
-        found+=qt_searchArea(qt->nw, result, area)
-        found+=qt_searchArea(qt->ne, result, area)
-        found+=qt_searchArea(qt->sw, result, area)
-        found+=qt_searchArea(qt->se, result, area)
+'        found+=qt_searchArea(qt->nw, result, area)
+'        found+=qt_searchArea(qt->ne, result, area)
+'        found+=qt_searchArea(qt->sw, result, area)
+'        found+=qt_searchArea(qt->se, result, area)
     end if
     
-    return ret
+    return found
 end function
 
 function qt_getCount(qt as QuadTree ptr) as integer

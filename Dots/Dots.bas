@@ -102,6 +102,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as QuadTree qt = qt_create(rect_create(0, 0, QT_SIZE, QT_SIZE), QT_CAP, 0)
     dim as QuadTree ptr qt_dbg = @qt
     dim as QTresult searchResults
+    dim as Rect searchArea = rect_create(0,0,50,50)
     
     
     dim as Form fQTDebug = form_create(520, 6, 31, 9, BACKGROUNDCOLOR, BORDERCOLOR, TEXTCOLOR)
@@ -117,10 +118,8 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as EVENT e
     dim as boolean runApp = true
     
-    dim as integer maxDots = 1000
+    dim as integer maxDots = 25
     dim as Dot ptr dots = generateDots(maxDots, qt.boundary, 100)
-    
-    
     
     'spamDots(@qt, 9, 0, 0, QT_SIZE, QT_SIZE)
     
@@ -134,6 +133,7 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             'zoom+=ms.dWheel
         end if
         mouse_update(@ms_new)
+        searchArea.position = pnt_create(ms.x-searchArea.size.x, ms.y-searchArea.size.x)
         
         sw_start(@w_build)
         qt_build(@qt, dots, maxDots)
@@ -195,6 +195,10 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
             end select
         end if
         
+'        sw_start(@w_search)
+'        qt_searchArea(@qt, @searchResults, searchArea)
+'        sw_stop(@w_search)
+        
         if(ms.buttons = BUTTON_RIGHT) then
             dim as Pnt p = type<Pnt>(ms.x, ms.y)
             sw_start(@w_search)
@@ -212,9 +216,19 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
         qt_render(@qt, DOTCOLOR, true, true)
         sw_stop(@w_qtRender)
         
+        ' Results
+        draw string(5, 550), str(searchResults.count)
+        for i as integer = 0 to searchResults.count-1
+            pnt_render(@cptr(dot ptr, searchResults.n[i]->d)->position)
+        next i
         
         
+        ' Selected boundary
         rect_render(@qt_dbg->boundary, rgb(82, 216, 136))
+        
+        ' Search area
+        rect_render(@searchArea, rgb(255,0,255))
+        
         
         ' Render forms
         form_qtDebug(@fQTdebug, qt_dbg)
