@@ -17,6 +17,14 @@ private:
 	 State state;
 
 public:
-	Dot();
-	void Kill();
+	Dot()
+	{
+		this->state = healthy;
+	}
+
+	void Kill()
+	{
+		this->state = dead;
+	}
+
 };

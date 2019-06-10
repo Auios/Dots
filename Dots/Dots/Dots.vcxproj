@@ -130,11 +130,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Dot.cpp" />
-    <ClCompile Include="AppWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dot.h" />
+    <ClInclude Include="Graphics.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="AppWindow.h" />
   </ItemGroup>
