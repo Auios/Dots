@@ -1,30 +1,22 @@
 #pragma once
 
-#include <string>
-
-using namespace std;
-
-enum State
-{
-	healthy,
-	wounded,
-	dead
-};
+#include "SFML/Graphics.hpp"
+#include "SFML/System.hpp"
+#include "SFML/Window.hpp"
+#include "SFML/Audio.hpp"
+#include "SFML/Network.hpp"
 
 class Dot
 {
 private:
-	 State state;
+	sf::RectangleShape shape;
 
+	void init_shape();
 public:
-	Dot()
-	{
-		this->state = healthy;
-	}
-
-	void Kill()
-	{
-		this->state = dead;
-	}
-
+	Dot(sf::Vector2f pos);
+	virtual ~Dot();
+	void update();
+	void render(sf::RenderTarget* rt);
+	void set_pos(sf::Vector2f pos);
 };
+

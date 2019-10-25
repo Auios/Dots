@@ -129,13 +129,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Dot.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="QT_Region.cpp" />
+    <ClCompile Include="Quad_Tree.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Dot.h" />
-    <ClInclude Include="Graphics.h" />
-    <ClInclude Include="Point.h" />
-    <ClInclude Include="AppWindow.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="QT_Region.h" />
+    <ClInclude Include="Quad_Tree.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
