@@ -1,4 +1,5 @@
 #include <iostream>
+#include <time.h>
 
 #include "Game.h"
 
@@ -13,7 +14,7 @@ int main()
 {
 	srand((unsigned int)time(NULL));
 
-	Game game;
+	Game game(800, 600, "Dots");
 
 	// Start the game loop
 	while (game.is_running())

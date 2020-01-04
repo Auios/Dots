@@ -1,12 +1,11 @@
 #include "Game.h"
 
-Game::Game()
+Game::Game(unsigned int width, unsigned int height, sf::String title)
 {
 	this->echo("Starting up...");
 	this->init_variables();
-	this->init_window();
+	this->init_window(width, height, title);
 	this->load_font("terminal.ttf");
-	this->init_dots();
 	this->echo("Running!");
 }
 
@@ -17,44 +16,30 @@ Game::~Game()
 	this->echo("Done!");
 }
 
+void Game::echo(std::string message)
+{
+	std::cout << message << std::endl;
+}
+
 void Game::init_variables()
 {
 	this->window = nullptr;
+	this->qt = new Quad_Tree<Dot>(sf::Vector2f(50, 50), sf::Vector2f(150, 150));
 }
 
-void Game::init_window()
+void Game::init_window(unsigned int width, unsigned int height, sf::String title)
 {
 	this->echo("Initializing window...");
-	this->video_mode.width = 800;
-	this->video_mode.height = 600;
-	this->window = new sf::RenderWindow(this->video_mode, "Dots", sf::Style::Titlebar | sf::Style::Close);
+	this->video_mode.width = width;
+	this->video_mode.height = height;
+	this->window = new sf::RenderWindow(this->video_mode, title, sf::Style::Titlebar | sf::Style::Close);
 	this->window->setFramerateLimit(60);
 	this->echo("Created window (" + std::to_string(this->video_mode.width) + "," + std::to_string(this->video_mode.height) + ")!");
-}
-
-void Game::init_dots()
-{
-	this->spawn_dot(sf::Vector2f(20, 20));
-	this->spawn_dot(sf::Vector2f(40, 70));
-	this->spawn_dot(sf::Vector2f(120, 100));
 }
 
 const bool Game::is_running() const
 {
 	return this->window->isOpen();
-}
-
-void Game::spawn_dot(sf::Vector2f position)
-{
-	Dot dot = Dot(position);
-	dot.set_pos(position);
-	this->dots.push_back(dot);
-	std::cout << "Dots: " << this->dots.size() << std::endl;
-}
-
-void Game::echo(std::string message)
-{
-	std::cout << message << std::endl;
 }
 
 void Game::load_font(std::string file_path)
@@ -96,7 +81,7 @@ void Game::poll_events()
 		case sf::Event::MouseButtonPressed:
 			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
-				this->spawn_dot(this->mouse_view);
+				//this->spawn_dot(this->mouse_view);
 			}
 			break;
 		}
@@ -109,28 +94,19 @@ void Game::update_mouse()
 	this->mouse_view = this->window->mapPixelToCoords(this->mouse_pos);
 }
 
-void Game::update_dots()
-{
-}
-
 void Game::update()
 {
 	this->poll_events();
 	this->update_mouse();
-	this->update_dots();
-}
-
-void Game::render_dots()
-{
-	std::list<Dot>::iterator it;
-	for (it = dots.begin(); it != dots.end(); it++)
-		it->render(this->window);
 }
 
 void Game::render()
 {
-	//this->window->clear(sf::Color(100, 100, 200, 255));
-	this->window->clear();
-	this->render_dots();
+	this->window->clear(sf::Color(100, 100, 200, 255));
+	//this->window->clear();
+
+	if(this->qt) this->qt->render(this->window);
+
 	this->window->display();
 }
+

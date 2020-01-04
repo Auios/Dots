@@ -27,7 +27,7 @@
     <ClCompile Include="Quad_Tree.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QT_Region.cpp">
+    <ClCompile Include="Quad_Tree_Region.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClInclude Include="Quad_Tree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="QT_Region.h">
+    <ClInclude Include="Quad_Tree_Region.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
