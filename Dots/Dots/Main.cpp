@@ -1,25 +1,25 @@
 #include <stdio.h>
-
-#include "SDL2/SDL.h"
+#include "Engine.h"
 
 using namespace std;
 
+Engine* game = nullptr;
+
 int main(int argc, char* args[])
 {
-	SDL_Init(SDL_INIT_VIDEO);
+	game = new Engine();
+	game->init("Dots", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600);
+	game->create_world(300, 300);
+	game->set_current_world(0);
 
-	SDL_Window* wnd;
-	wnd = SDL_CreateWindow("Dots", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_OPENGL);
-	if (!wnd)
+	while (game->running())
 	{
-		printf("Error: Failed to create window\nReason: \"%s\"", SDL_GetError());
-		return -1;
+		game->handle_events();
+		game->update();
+		game->draw();
 	}
 
-	SDL_Delay(1500);
-
-	SDL_DestroyWindow(wnd);
-	SDL_Quit();
+	game->clean();
 
 	return 0;
 }
