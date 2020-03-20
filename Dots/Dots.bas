@@ -100,7 +100,11 @@ function main(argc as integer, argv as zstring ptr ptr) as integer
     dim as EVENT e
     dim as boolean runApp = true
     
-    globalCount+=spamDots(@qt, 9, 0, 0, QT_SIZE, QT_SIZE)
+    dim as double start_time = timer()
+    globalCount+=spamDots(@qt, 200000, 0, 0, QT_SIZE, QT_SIZE)
+    dim as double total_time = timer() - start_time
+    print total_time
+    sleep()
     
     ' ===== Main loop =====
     while(runApp)
